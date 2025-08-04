@@ -66,7 +66,7 @@ func OpenLog() {
 		log.SetOutput(LogFile)
 		log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
 		log.SetFlags(log.Ldate | log.Ltime | log.Lmsgprefix)
-		log.Printf("%s v%s startup\n", ProgramName, ProgramVersion)
+		log.Printf("%s v%s startup\n", ProgramName, Version)
 		cobra.OnFinalize(CloseLog)
 	}
 	if ViperGetBool("debug") {
