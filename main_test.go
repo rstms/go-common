@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"github.com/spf13/viper"
@@ -12,6 +12,6 @@ func initTestConfig(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestMain(t *testing.T) {
+func TestStartup(t *testing.T) {
 	initTestConfig(t)
 }

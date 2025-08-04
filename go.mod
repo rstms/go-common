@@ -1,6 +1,6 @@
 module github.com/rstms/go-common
 
-go 1.22.1
+go 1.24.5
 
 require (
 	github.com/spf13/cobra v1.9.1
