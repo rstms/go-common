@@ -1,3 +1,2 @@
-go-common:
-  logfile: stderr
-  verbose: true
+logfile: stderr
+verbose: true
