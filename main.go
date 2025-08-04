@@ -30,8 +30,8 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package main
 
-import "github.com/rstms/go-common/cmd"
+import "fmt"
 
 func main() {
-	cmd.Execute()
+	fmt.Println("utility module")
 }
