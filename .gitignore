@@ -1,0 +1,7 @@
+go-common
+goon-template
+notes
+cruft
+*.core
+*.log
+*postactivate
