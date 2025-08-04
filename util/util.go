@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-var ProgramName string = "unnamed"
-var ProgramVersion string
+var ProgramName string = "util"
+var Version string = "0.0.1"
 var ConfigFile string
 
 var ViperPrefix = ProgramName + "."
