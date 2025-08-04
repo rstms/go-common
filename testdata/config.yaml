@@ -1,2 +1,3 @@
 go-common:
+  logfile: stderr
   verbose: true

@@ -3,6 +3,7 @@ package util
 import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"log"
 	"testing"
 )
 
@@ -12,6 +13,8 @@ func initTestConfig(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestStartup(t *testing.T) {
-	initTestConfig(t)
+func TestLog(t *testing.T) {
+	OpenLog()
+	log.Println("log message")
+	CloseLog()
 }
