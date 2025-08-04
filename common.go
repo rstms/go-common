@@ -13,7 +13,7 @@ import (
 )
 
 var ProgramName string = "util"
-var Version string = "0.1.0"
+var Version string = "0.1.1"
 var ConfigFile string
 
 var ViperPrefix = ""
