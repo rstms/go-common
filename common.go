@@ -22,32 +22,32 @@ var LogFile *os.File
 var CONFIRM_ACCEPT_MESSAGE = "Proceeding"
 var CONFIRM_REJECT_MESSAGE = "Cowardly refused"
 
-func viperKey(name string) string {
+func ViperKey(name string) string {
 	return ViperPrefix + strings.ToLower(strings.ReplaceAll(name, "-", "_"))
 }
 
 func ViperGetBool(key string) bool {
-	return viper.GetBool(viperKey(key))
+	return viper.GetBool(ViperKey(key))
 }
 
 func ViperGetString(key string) string {
-	return Expand(viper.GetString(viperKey(key)))
+	return Expand(viper.GetString(ViperKey(key)))
 }
 
 func ViperGetInt(key string) int {
-	return viper.GetInt(viperKey(key))
+	return viper.GetInt(ViperKey(key))
 }
 
 func ViperGetInt64(key string) int64 {
-	return viper.GetInt64(viperKey(key))
+	return viper.GetInt64(ViperKey(key))
 }
 
 func ViperSet(key string, value any) {
-	viper.Set(viperKey(key), value)
+	viper.Set(ViperKey(key), value)
 }
 
 func ViperSetDefault(key string, value any) {
-	viper.SetDefault(viperKey(key), value)
+	viper.SetDefault(ViperKey(key), value)
 }
 
 func OpenLog() {
