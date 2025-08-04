@@ -16,11 +16,16 @@ var ProgramName string = "util"
 var Version string = "0.1.0"
 var ConfigFile string
 
-var ViperPrefix = ProgramName + "."
+var ViperPrefix = ""
 var LogFile *os.File
 
 var CONFIRM_ACCEPT_MESSAGE = "Proceeding"
 var CONFIRM_REJECT_MESSAGE = "Cowardly refused"
+
+func SetProgramName(name string) {
+	ProgramName = name
+	ViperPrefix = name + "."
+}
 
 func ViperKey(name string) string {
 	return ViperPrefix + strings.ToLower(strings.ReplaceAll(name, "-", "_"))
