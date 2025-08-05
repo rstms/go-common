@@ -8,27 +8,29 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
-var Version string = "0.1.2"
-var ConfigFile string
+const Version = "0.1.2"
 
 var LogFile *os.File
 
-var CONFIRM_ACCEPT_MESSAGE = "Proceeding"
-var CONFIRM_REJECT_MESSAGE = "Cowardly refused"
+var ConfirmAcceptMessage = "Proceeding"
+var ConfirmRejectMessage = "Cowardly refused"
 
 // client program name and version used for viper prefix and logfile header
 // these are pointers so we'll panic if Init has not been called
 var programName *string
 var programVersion *string
+var programConfigFile *string
 
 // must be called before any other functions
-func Init(name, version *string) {
-	programName = name
-	programVersion = version
+func Init(name, version string) {
+	programName = &name
+	programVersion = &version
 }
 
 func ProgramName() string {
@@ -137,12 +139,13 @@ func Expand(pathname string) string {
 	return pathname
 }
 
-func InitConfig() {
+func InitConfig(configFile string) {
+	programConfigFile = &configFile
 	name := strings.ToLower(strings.ReplaceAll(*programName, "-", "_"))
 	viper.SetEnvPrefix(name)
 	viper.AutomaticEnv()
-	if ConfigFile != "" {
-		viper.SetConfigFile(ConfigFile)
+	if configFile != "" {
+		viper.SetConfigFile(configFile)
 	} else {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
@@ -180,7 +183,7 @@ func Confirm(prompt string) bool {
 		if response == "y" || response == "yes" {
 			msg := ViperGetString("messages.confirm_accept")
 			if msg == "" {
-				msg = CONFIRM_ACCEPT_MESSAGE
+				msg = ConfirmAcceptMessage
 			}
 			if msg != "" {
 				fmt.Println(msg)
@@ -189,7 +192,7 @@ func Confirm(prompt string) bool {
 		} else if response == "n" || response == "no" || response == "" {
 			msg := ViperGetString("messages.confirm_reject")
 			if msg == "" {
-				msg = CONFIRM_REJECT_MESSAGE
+				msg = ConfirmRejectMessage
 			}
 			if msg != "" {
 				fmt.Println(msg)
@@ -197,4 +200,50 @@ func Confirm(prompt string) bool {
 			return false
 		}
 	}
+}
+
+func InitConfigFile() {
+	file := *programConfigFile
+	if file == "" {
+		userConfig, err := os.UserConfigDir()
+		cobra.CheckErr(err)
+		dir := filepath.Join(userConfig, strings.ToLower(strings.ReplaceAll(*programName, "-", "_")))
+		if !IsDir(dir) {
+			if !Confirm(fmt.Sprintf("Create directory '%s'", dir)) {
+				return
+			}
+			err := os.Mkdir(dir, 0700)
+			cobra.CheckErr(err)
+		}
+		file = filepath.Join(dir, "config.yaml")
+	}
+	if IsFile(file) {
+		if !Confirm(fmt.Sprintf("Overwrite config file '%s'", file)) {
+			return
+		}
+	}
+	err := viper.WriteConfigAs(file)
+	cobra.CheckErr(err)
+	fmt.Printf("Default configuration written to %s\n", file)
+}
+
+func EditConfigFile() {
+	var editCommand string
+	if runtime.GOOS == "windows" {
+		editCommand = "notepad"
+	} else {
+		editCommand = os.Getenv("VISUAL")
+		if editCommand == "" {
+			editCommand = os.Getenv("EDITOR")
+			if editCommand == "" {
+				editCommand = "vi"
+			}
+		}
+	}
+	editor := exec.Command(editCommand, viper.ConfigFileUsed())
+	editor.Stdin = os.Stdin
+	editor.Stdout = os.Stdout
+	editor.Stderr = os.Stderr
+	err := editor.Run()
+	cobra.CheckErr(err)
 }

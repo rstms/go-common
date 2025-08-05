@@ -1,18 +1,15 @@
 package common
 
 import (
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"log"
+	"path/filepath"
 	"testing"
 )
 
 func initTestConfig(t *testing.T) {
-	name := "go-common"
-	Init(&name, &Version)
-	viper.SetConfigFile("testdata/config.yaml")
-	err := viper.ReadInConfig()
-	require.Nil(t, err)
+	Init("go-common", Version)
+	InitConfig(filepath.Join("testdata", "config.yaml"))
 }
 
 func TestViperGet(t *testing.T) {
