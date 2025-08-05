@@ -12,23 +12,39 @@ import (
 	"strings"
 )
 
-var ProgramName string = "util"
 var Version string = "0.1.1"
 var ConfigFile string
 
-var ViperPrefix = ""
 var LogFile *os.File
 
 var CONFIRM_ACCEPT_MESSAGE = "Proceeding"
 var CONFIRM_REJECT_MESSAGE = "Cowardly refused"
 
-func SetProgramName(name string) {
-	ProgramName = name
-	ViperPrefix = name + "."
+// client program name and version used for viper prefix and logfile header
+// these are pointers so we'll panic if Init has not been called
+var programName *string
+var programVersion *string
+
+// must be called before any other functions
+func Init(name, version *string) {
+	programName = name
+	programVersion = version
+}
+
+func ProgramName() string {
+	return *programName
+}
+
+func ProgramVersion() string {
+	return *programVersion
 }
 
 func ViperKey(name string) string {
-	return ViperPrefix + strings.ToLower(strings.ReplaceAll(name, "-", "_"))
+	var prefix string
+	if *programName != "" {
+		prefix = *programName + "."
+	}
+	return strings.ToLower(strings.ReplaceAll(prefix+name, "-", "_"))
 }
 
 func ViperGetBool(key string) bool {
@@ -71,7 +87,7 @@ func OpenLog() {
 		log.SetOutput(LogFile)
 		log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
 		log.SetFlags(log.Ldate | log.Ltime | log.Lmsgprefix)
-		log.Printf("%s v%s startup\n", ProgramName, Version)
+		log.Printf("%s v%s startup\n", *programName, *programVersion)
 		cobra.OnFinalize(CloseLog)
 	}
 	if ViperGetBool("debug") {
@@ -122,7 +138,8 @@ func Expand(pathname string) string {
 }
 
 func InitConfig() {
-	viper.SetEnvPrefix(ProgramName)
+	name := strings.ToLower(strings.ReplaceAll(*programName, "-", "_"))
+	viper.SetEnvPrefix(name)
 	viper.AutomaticEnv()
 	if ConfigFile != "" {
 		viper.SetConfigFile(ConfigFile)
@@ -131,9 +148,9 @@ func InitConfig() {
 		cobra.CheckErr(err)
 		userConfig, err := os.UserConfigDir()
 		cobra.CheckErr(err)
-		viper.AddConfigPath(filepath.Join(home, "."+ProgramName))
-		viper.AddConfigPath(filepath.Join(userConfig, ProgramName))
-		viper.AddConfigPath(filepath.Join("/etc", ProgramName))
+		viper.AddConfigPath(filepath.Join(home, "."+name))
+		viper.AddConfigPath(filepath.Join(userConfig, name))
+		viper.AddConfigPath(filepath.Join("/etc", name))
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config")
 	}

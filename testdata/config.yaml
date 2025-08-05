@@ -1,2 +1,4 @@
-logfile: stderr
-verbose: true
+go_common:
+  verbose: true
+  logfile: stderr
+  test_value: testing123
