@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const Version = "0.1.3"
+const Version = "0.1.4"
 
 var LogFile *os.File
 
