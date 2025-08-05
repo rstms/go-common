@@ -43,7 +43,7 @@ func ProgramVersion() string {
 
 func ViperKey(name string) string {
 	if programName == nil {
-		panic("function called before Init()")
+	    panic("go-common: function called before Init()")
 	}
 	var prefix string
 	if *programName != "" {
