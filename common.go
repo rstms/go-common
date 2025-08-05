@@ -29,7 +29,6 @@ var programConfigFile *string
 
 // must be called before any other functions
 func Init(name, version string) {
-	fmt.Printf("common.Init(%s, %s)\n", name, version)
 	programName = &name
 	programVersion = &version
 }
@@ -43,7 +42,6 @@ func ProgramVersion() string {
 }
 
 func ViperKey(name string) string {
-	fmt.Printf("common.ViperKey(%s)\n", name)
 	var prefix string
 	if *programName != "" {
 		prefix = *programName + "."
@@ -142,7 +140,6 @@ func Expand(pathname string) string {
 }
 
 func InitConfig(configFile string) {
-	fmt.Printf("common.InitConfig(%s)\n", configFile)
 	programConfigFile = &configFile
 	name := strings.ToLower(strings.ReplaceAll(*programName, "-", "_"))
 	viper.SetEnvPrefix(name)
