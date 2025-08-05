@@ -216,7 +216,7 @@ func InitConfigFile() {
 		cobra.CheckErr(err)
 		dir := filepath.Join(userConfig, strings.ToLower(strings.ReplaceAll(*programName, "-", "_")))
 		if !IsDir(dir) {
-			if !Confirm(fmt.Sprintf("Create directory '%s'", dir)) {
+			if !Confirm(fmt.Sprintf("Create directory '%s'?", dir)) {
 				return
 			}
 			err := os.Mkdir(dir, 0700)
@@ -225,7 +225,7 @@ func InitConfigFile() {
 		file = filepath.Join(dir, "config.yaml")
 	}
 	if IsFile(file) {
-		if !Confirm(fmt.Sprintf("Overwrite config file '%s'", file)) {
+		if !Confirm(fmt.Sprintf("Overwrite config file '%s'?", file)) {
 			return
 		}
 	}
