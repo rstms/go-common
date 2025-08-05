@@ -42,6 +42,9 @@ func ProgramVersion() string {
 }
 
 func ViperKey(name string) string {
+	if programName == nil {
+		panic("function called before Init()")
+	}
 	var prefix string
 	if *programName != "" {
 		prefix = *programName + "."
