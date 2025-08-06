@@ -43,7 +43,7 @@ func ProgramVersion() string {
 
 func ViperKey(name string) string {
 	if programName == nil {
-	    panic("go-common: function called before Init()")
+		panic("go-common: function called before Init()")
 	}
 	var prefix string
 	if *programName != "" {
@@ -58,6 +58,10 @@ func ViperGetBool(key string) bool {
 
 func ViperGetString(key string) string {
 	return Expand(viper.GetString(ViperKey(key)))
+}
+
+func ViperGetStringSlice(key string) []string {
+	return viper.GetStringSlice(ViperKey(key))
 }
 
 func ViperGetInt(key string) int {
