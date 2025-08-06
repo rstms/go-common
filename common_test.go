@@ -32,3 +32,8 @@ func TestDebugLog(t *testing.T) {
 	log.Println("log message")
 	CloseLog()
 }
+
+func TestHexDump(t *testing.T) {
+	data := []byte("howdy\nhowdy\nhowdy\n")
+	log.Println("label\n" + HexDump(data))
+}
