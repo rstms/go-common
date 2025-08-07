@@ -39,12 +39,20 @@ func TestHexDump(t *testing.T) {
 	log.Println("label\n" + HexDump(data))
 }
 
+func fatal(err error) error {
+	return Fatal(err)
+}
+
+func fatalf(format string, args ...interface{}) error {
+	return Fatalf(format, args...)
+}
+
 func TestFatal(t *testing.T) {
-	err := Fatal("string message")
-	expected := errors.New("expected")
+	expected := errors.New("expected_error")
+	err := fatal(expected)
 	log.Println(err)
 	require.IsType(t, expected, err)
-	err = Fatal("printf error: %s", "with_value")
+	err = fatalf("printf_type: %s: %v", "with_value", expected)
 	require.IsType(t, expected, err)
 	log.Println(err)
 }
