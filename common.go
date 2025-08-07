@@ -293,3 +293,36 @@ func HexDump(data []byte) string {
 	}
 	return output.String()
 }
+
+func Fatal(format string, args ...interface{}) error {
+	_, file, line, ok := runtime.Caller(1)
+	if ok {
+		_, file := filepath.Split(file)
+		err := fmt.Errorf("%s:%d: %s", file, line, fmt.Sprintf(format, args...))
+		return err
+	}
+	err := fmt.Errorf(format, args...)
+	return err
+}
+
+/*
+func Fatal(err error) error {
+	_, file, line, ok := runtime.Caller(1)
+	if ok {
+		_, file := filepath.Split(file)
+		err = fmt.Errorf("%s:%d: %v", file, line, err)
+	}
+	return err
+}
+*/
+
+/*
+func Warning(msg string) {
+    log.Println("WARNING: " + msg)
+}
+*/
+
+func Warning(format string, args ...interface{}) {
+	msg := "WARNING: " + fmt.Sprintf(format, args...)
+	log.Println(msg)
+}

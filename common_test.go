@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"github.com/stretchr/testify/require"
 	"log"
 	"path/filepath"
@@ -36,4 +37,19 @@ func TestDebugLog(t *testing.T) {
 func TestHexDump(t *testing.T) {
 	data := []byte("howdy\nhowdy\nhowdy\n")
 	log.Println("label\n" + HexDump(data))
+}
+
+func TestFatal(t *testing.T) {
+	err := Fatal("string message")
+	expected := errors.New("expected")
+	log.Println(err)
+	require.IsType(t, expected, err)
+	err = Fatal("printf error: %s", "with_value")
+	require.IsType(t, expected, err)
+	log.Println(err)
+}
+
+func TestWarning(t *testing.T) {
+	Warning("string warning")
+	Warning("formatted warning: %v", true)
 }
