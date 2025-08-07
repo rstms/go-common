@@ -299,7 +299,7 @@ func Fatal(err error) error {
 	_, file, line, ok := runtime.Caller(2)
 	if ok {
 		_, file := filepath.Split(file)
-		err := fmt.Errorf("%s:%d: Error: %v", file, line, err)
+		err := fmt.Errorf("%s:%d: %v", file, line, err)
 		return err
 	}
 	return err
@@ -309,7 +309,7 @@ func Fatalf(format string, args ...interface{}) error {
 	_, file, line, ok := runtime.Caller(2)
 	if ok {
 		_, file := filepath.Split(file)
-		err := fmt.Errorf("%s:%d: Error: %s", file, line, fmt.Sprintf(format, args...))
+		err := fmt.Errorf("%s:%d: %s", file, line, fmt.Sprintf(format, args...))
 		return err
 	}
 	err := fmt.Errorf(format, args...)
