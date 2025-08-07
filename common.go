@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -296,21 +297,39 @@ func HexDump(data []byte) string {
 
 // use a local function alias to get the source mapping right
 func Fatal(err error) error {
-	_, file, line, ok := runtime.Caller(2)
-	if ok {
-		_, file := filepath.Split(file)
-		err := fmt.Errorf("%s:%d: %v", file, line, err)
-		return err
+	pc := make([]uintptr, 1)
+	count := runtime.Callers(3, pc)
+	if count != 0 {
+		frames := runtime.CallersFrames(pc)
+		frame, _ := frames.Next()
+		zframe := runtime.Frame{}
+		if frame != zframe {
+			_, full_function := path.Split(frame.Function)
+			parts := strings.Split(full_function, ".")
+			function := parts[len(parts)-1]
+			_, file := path.Split(frame.File)
+			err := fmt.Errorf("%s:%d %s: %v", file, frame.Line, function, err)
+			return err
+		}
 	}
 	return err
 }
 
 func Fatalf(format string, args ...interface{}) error {
-	_, file, line, ok := runtime.Caller(2)
-	if ok {
-		_, file := filepath.Split(file)
-		err := fmt.Errorf("%s:%d: %s", file, line, fmt.Sprintf(format, args...))
-		return err
+	pc := make([]uintptr, 1)
+	count := runtime.Callers(3, pc)
+	if count != 0 {
+		frames := runtime.CallersFrames(pc)
+		frame, _ := frames.Next()
+		zframe := runtime.Frame{}
+		if frame != zframe {
+			_, full_function := path.Split(frame.Function)
+			parts := strings.Split(full_function, ".")
+			function := parts[len(parts)-1]
+			_, file := path.Split(frame.File)
+			err := fmt.Errorf("%s:%d %s: %s", file, frame.Line, function, fmt.Sprintf(format, args...))
+			return err
+		}
 	}
 	err := fmt.Errorf(format, args...)
 	return err
