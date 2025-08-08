@@ -132,7 +132,7 @@ func formatMessage(to, from, subject string, body []byte) ([]byte, error) {
 	writer := quotedprintable.NewWriter(&buf)
 	_, err := writer.Write(body)
 	if err != nil {
-		return nil, err
+		return nil, Fatal(err)
 	}
 	writer.Close()
 	return buf.Bytes(), nil
