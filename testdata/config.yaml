@@ -2,3 +2,11 @@ go_common:
   verbose: true
   logfile: stderr
   test_value: testing123
+  smtp:
+    host: ${SMTP_HOST}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+  test:
+    sendmail:
+      to: ${SMTP_TEST_TO}
+      from: ${SMTP_TEST_FROM}

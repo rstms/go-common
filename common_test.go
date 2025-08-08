@@ -11,6 +11,7 @@ import (
 func initTestConfig(t *testing.T) {
 	Init("go-common", Version)
 	InitConfig(filepath.Join("testdata", "config.yaml"))
+	//viper.WriteConfigTo(os.Stdout)
 }
 
 func TestViperGet(t *testing.T) {
