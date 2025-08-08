@@ -59,6 +59,10 @@ func ViperSet(key string, value any) {
 	viper.Set(ViperKey(key), value)
 }
 
+func ViperSetDefault(key string, value any) {
+	viper.SetDefault(ViperKey(key), value)
+}
+
 func InitConfig(configFile string) {
 	programConfigFile = &configFile
 	name := strings.ToLower(strings.ReplaceAll(*programName, "-", "_"))
