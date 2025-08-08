@@ -41,7 +41,7 @@ func Sendmail(to, from, subject string, body []byte, smtpServer *SMTPServer) err
 			if err != nil {
 				return Fatal(err)
 			}
-			smtpServer.Password = string(data)
+			smtpServer.Password = strings.TrimSpace(string(data))
 		}
 	}
 
