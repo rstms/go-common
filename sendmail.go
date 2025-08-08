@@ -35,6 +35,14 @@ func Sendmail(to, from, subject string, body []byte, smtpServer *SMTPServer) err
 		if smtpServer.Port == 0 {
 			smtpServer.Port = 465
 		}
+		passwordFile := ViperGetString("smtp.password_file")
+		if passwordFile != "" {
+			data, err := os.ReadFile(passwordFile)
+			if err != nil {
+				return Fatal(err)
+			}
+			smtpServer.Password = string(data)
+		}
 	}
 
 	caCertPool := x509.NewCertPool()

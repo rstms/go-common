@@ -5,7 +5,6 @@ go_common:
   smtp:
     host: ${SMTP_HOST}
     username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
   test:
     sendmail:
       to: ${SMTP_TEST_TO}
