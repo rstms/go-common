@@ -323,9 +323,9 @@ func Fatalf(format string, args ...interface{}) error {
 		frame, _ := frames.Next()
 		zframe := runtime.Frame{}
 		if frame != zframe {
-			_, full_function := path.Split(frame.Function)
-			parts := strings.Split(full_function, ".")
-			function := parts[len(parts)-1]
+			_, function := path.Split(frame.Function)
+			//parts := strings.Split(function, ".")
+			//function := parts[len(parts)-1]
 			_, file := path.Split(frame.File)
 			err := fmt.Errorf("%s:%d %s: %s", file, frame.Line, function, fmt.Sprintf(format, args...))
 			return err
