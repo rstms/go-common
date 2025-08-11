@@ -35,6 +35,13 @@ func ProgramVersion() string {
 	return *programVersion
 }
 
+func CheckErr(err error) {
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
 func OpenLog() {
 	filename := ViperGetString("logfile")
 	LogFile = nil
