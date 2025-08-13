@@ -84,14 +84,17 @@ func FormatJSON(v any) string {
 }
 
 func IsDir(path string) bool {
-	stat, err := os.Stat(path)
+	fileInfo, err := os.Stat(path)
 	if err != nil {
 		return false
 	}
-	return stat.IsDir()
+	return fileInfo.IsDir()
 }
 
 func IsFile(pathname string) bool {
-	_, err := os.Stat(pathname)
-	return !os.IsNotExist(err)
+	fileInfo, err := os.Stat(pathname)
+	if err != nil {
+		return false
+	}
+	return fileInfo.Mode().IsRegular()
 }
