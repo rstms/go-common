@@ -14,85 +14,102 @@ import (
 	"time"
 )
 
-type SMTPServer struct {
+type Sendmail struct {
 	Host     string
 	Port     int
 	Username string
 	Password string
 	CAFile   string
+	c        *smtp.Client
 }
 
-func Sendmail(to, from, subject string, body []byte, smtpServer *SMTPServer) error {
+func NewSendmail(hostname string, port int, username, password, CAFile string) (*Sendmail, error) {
 
-	if smtpServer == nil {
-		smtpServer = &SMTPServer{
-			Host:     ViperGetString("smtp.host"),
-			Port:     ViperGetInt("smtp.port"),
-			Username: ViperGetString("smtp.username"),
-			Password: ViperGetString("smtp.password"),
-			CAFile:   ViperGetString("smtp.ca_file"),
-		}
-		if smtpServer.Port == 0 {
-			smtpServer.Port = 465
-		}
-		passwordFile := ViperGetString("smtp.password_file")
-		if passwordFile != "" {
-			data, err := os.ReadFile(passwordFile)
-			if err != nil {
-				return Fatal(err)
-			}
-			smtpServer.Password = strings.TrimSpace(string(data))
-		}
+	c := Sendmail{
+		Host:     hostname,
+		Port:     port,
+		Username: username,
+		Password: password,
+		CAFile:   CAFile,
 	}
-
+	if c.Port == 0 {
+		c.Port = 465
+	}
 	caCertPool := x509.NewCertPool()
-	if smtpServer.CAFile != "" {
-		caCert, err := os.ReadFile(smtpServer.CAFile)
+	if c.CAFile != "" {
+		caCert, err := os.ReadFile(c.CAFile)
 		if err != nil {
-			return Fatal(err)
+			return nil, Fatal(err)
 		}
 		ok := caCertPool.AppendCertsFromPEM(caCert)
 		if !ok {
-			return Fatalf("failed appending CA cert: %s", smtpServer.CAFile)
+			return nil, Fatalf("failed appending CA cert: %s", c.CAFile)
 		}
 	} else {
 		var err error
 		caCertPool, err = x509.SystemCertPool()
 		if err != nil {
-			return Fatal(err)
+			return nil, Fatal(err)
 		}
 	}
 
 	tlsConfig := &tls.Config{
 		RootCAs:    caCertPool,
-		ServerName: smtpServer.Host,
+		ServerName: c.Host,
 	}
 
-	conn, err := tls.Dial("tcp", fmt.Sprintf("%s:%d", smtpServer.Host, smtpServer.Port), tlsConfig)
+	conn, err := tls.Dial("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port), tlsConfig)
+	if err != nil {
+		return nil, Fatal(err)
+	}
+
+	c.c, err = smtp.NewClient(conn, c.Host)
+	if err != nil {
+		return nil, Fatal(err)
+	}
+
+	_, err = c.readPassword()
+	if err != nil {
+		return nil, Fatal(err)
+	}
+	return &c, nil
+}
+
+func (c *Sendmail) readPassword() (string, error) {
+	password := c.Password
+	if strings.HasPrefix(password, "@") {
+		data, err := os.ReadFile(password[1:])
+		if err != nil {
+			return "", Fatal(err)
+		}
+		password = strings.TrimSpace(string(data))
+	}
+
+	return password, nil
+}
+
+func (c *Sendmail) Send(to, from, subject string, body []byte) error {
+
+	password, err := c.readPassword()
 	if err != nil {
 		return Fatal(err)
 	}
 
-	c, err := smtp.NewClient(conn, smtpServer.Host)
+	err = c.c.Auth(smtp.PlainAuth("", c.Username, password, c.Host))
 	if err != nil {
 		return Fatal(err)
 	}
 
-	err = c.Auth(smtp.PlainAuth("", smtpServer.Username, smtpServer.Password, smtpServer.Host))
+	err = c.c.Mail(from)
+	if err != nil {
+		return Fatal(err)
+	}
+	err = c.c.Rcpt(to)
 	if err != nil {
 		return Fatal(err)
 	}
 
-	err = c.Mail(from)
-	if err != nil {
-		return Fatal(err)
-	}
-	err = c.Rcpt(to)
-	if err != nil {
-		return Fatal(err)
-	}
-
-	fp, err := c.Data()
+	fp, err := c.c.Data()
 	if err != nil {
 		return Fatal(err)
 	}
@@ -108,7 +125,7 @@ func Sendmail(to, from, subject string, body []byte, smtpServer *SMTPServer) err
 		return Fatal(err)
 	}
 
-	c.Quit()
+	c.c.Quit()
 	return nil
 }
 

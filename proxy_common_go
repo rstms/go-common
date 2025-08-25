@@ -95,8 +95,8 @@ func TildePath(path string) (string, error) {
 	return common.TildePath(path)
 }
 
-func Sendmail(to, from, subject string, body []byte, smtpServer *SMTPServer) error {
-	return common.Sendmail(to, from, subject, body, smtpServer)
+func NewSendmail(hostname string, port int, username, password, CAFile string) (*Sendmail, error) {
+	return common.NewSendmail(hostname, port, username, password, CAFile)
 }
 
 func Expand(pathname string) string {
