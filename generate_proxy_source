@@ -42,7 +42,7 @@ gen() {
 
 echo "// go-common local proxy functions"
 echo 
-echo "package SET_PACKAGE"
+echo "package cmd"
 printf '\nimport (\n\tcommon "%s"\n)\n\n' github.com/rstms/go-common
 
 for src in $(ls *.go | grep -v _test.go); do
