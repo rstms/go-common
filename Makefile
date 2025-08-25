@@ -11,7 +11,7 @@ gitclean = $(if $(shell git status --porcelain),$(error git status is dirty),$(i
 
 $(program): build
 
-build: fmt
+build: fmt proxy_common_go
 	fix go build . ./...
 	go build
 
@@ -52,3 +52,6 @@ sterile: clean
 	go clean -cache
 	go clean -modcache
 	rm -f go.mod go.sum
+
+proxy_common_go: *.go
+	./generate_proxy_source >$@

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -ue
+
+pargs() {
+    #printf 'in="%s"' "$1"
+    out=
+    sep=
+    (
+	IFS=','
+	for rarg in $1; do
+	    #echo >&2 "rarg=${rarg}"
+	    farg="$(awk <<<$rarg '{printf("%s", $1);}')"
+	    sarg="$(awk <<<$rarg '{printf("%s", $2);}')"
+	    #echo >&2 "farg=${farg} sarg=${sarg} sep=${sep}"
+	    if [[ $sarg =~ ^\.\.\. ]]; then
+		farg="${farg}..."
+	    fi
+	    out="${out}${sep}${farg}"
+	    sep=', '
+	done 
+	printf '%s' "$out"
+    )
+}
+
+gen() {
+    printf '\n%s\n' "$1"
+    pre=$(awk <<<$1 -F'[ (]' '{print $2}')
+    args=$(awk <<<$1 -F'[()]' '{print $2}')
+    post=$(awk <<<$1 -F')' '{print $2}')
+    ret=$(awk <<<$post -F'{' '{print $1}')
+    #printf 'pre=%s\n' "$pre"
+    #printf 'args=%s\n' "$args"
+    #printf 'post=%s ret=%s\n' "$post" "$ret"
+    pfx=
+    for r in $ret; do
+	pfx='return '
+    done
+    printf '\t%scommon.%s(%s)\n}\n' "$pfx" "$pre" "$(pargs "$args")"
+}
+
+
+echo "// go-common local proxy functions"
+echo 
+echo "package SET_PACKAGE"
+printf '\nimport (\n\tcommon "%s"\n)\n\n' github.com/rstms/go-common
+
+for src in $(ls *.go | grep -v _test.go); do
+    grep '^func [A-Z]' $src | while read func; do
+	gen "$func"
+    done
+done
+true

@@ -19,7 +19,6 @@ var ConfirmRejectMessage = "Cowardly refused"
 // these are pointers so we'll panic if Init has not been called
 var programName *string
 var programVersion *string
-var programConfigFile *string
 
 // must be called before any other functions
 func Init(name, version string) {
@@ -81,20 +80,4 @@ func FormatJSON(v any) string {
 		log.Fatalf("failed formatting JSON: %v", err)
 	}
 	return string(data)
-}
-
-func IsDir(path string) bool {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	return fileInfo.IsDir()
-}
-
-func IsFile(pathname string) bool {
-	fileInfo, err := os.Stat(pathname)
-	if err != nil {
-		return false
-	}
-	return fileInfo.Mode().IsRegular()
 }
