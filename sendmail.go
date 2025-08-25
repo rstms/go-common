@@ -14,7 +14,11 @@ import (
 	"time"
 )
 
-type Sendmail struct {
+type Sendmail interface {
+	Send(to, from, subject string, body []byte) error
+}
+
+type SendmailClient struct {
 	Host     string
 	Port     int
 	Username string
@@ -23,9 +27,9 @@ type Sendmail struct {
 	c        *smtp.Client
 }
 
-func NewSendmail(hostname string, port int, username, password, CAFile string) (*Sendmail, error) {
+func NewSendmail(hostname string, port int, username, password, CAFile string) (Sendmail, error) {
 
-	c := Sendmail{
+	c := SendmailClient{
 		Host:     hostname,
 		Port:     port,
 		Username: username,
@@ -68,15 +72,14 @@ func NewSendmail(hostname string, port int, username, password, CAFile string) (
 		return nil, Fatal(err)
 	}
 
-	_, err = c.readPassword()
+	_, err = readPassword(c.Password)
 	if err != nil {
 		return nil, Fatal(err)
 	}
 	return &c, nil
 }
 
-func (c *Sendmail) readPassword() (string, error) {
-	password := c.Password
+func readPassword(password string) (string, error) {
 	if strings.HasPrefix(password, "@") {
 		data, err := os.ReadFile(password[1:])
 		if err != nil {
@@ -88,9 +91,9 @@ func (c *Sendmail) readPassword() (string, error) {
 	return password, nil
 }
 
-func (c *Sendmail) Send(to, from, subject string, body []byte) error {
+func (c *SendmailClient) Send(to, from, subject string, body []byte) error {
 
-	password, err := c.readPassword()
+	password, err := readPassword(c.Password)
 	if err != nil {
 		return Fatal(err)
 	}

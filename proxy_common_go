@@ -6,6 +6,9 @@ import (
 	common "github.com/rstms/go-common"
 )
 
+type Sendmail interface {
+	Send(to, from, subject string, body []byte) error
+}
 
 func OptionKey(cobraCmd interface{}, key string) string {
 	return common.OptionKey(cobraCmd, key)
@@ -95,7 +98,7 @@ func TildePath(path string) (string, error) {
 	return common.TildePath(path)
 }
 
-func NewSendmail(hostname string, port int, username, password, CAFile string) (*Sendmail, error) {
+func NewSendmail(hostname string, port int, username, password, CAFile string) (Sendmail, error) {
 	return common.NewSendmail(hostname, port, username, password, CAFile)
 }
 
