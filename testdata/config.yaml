@@ -3,7 +3,7 @@ go_common:
   logfile: stderr
   test_value: testing123
   smtp:
-    host: ${SMTP_HOST}
+    hostname: ${SMTP_HOST}
     username: ${SMTP_USERNAME}
   test:
     sendmail:

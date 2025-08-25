@@ -9,8 +9,7 @@ import (
 )
 
 func initTestConfig(t *testing.T) {
-	Init("go-common", Version)
-	InitConfig(filepath.Join("testdata", "config.yaml"))
+	Init("go-common", Version, filepath.Join("testdata", "config.yaml"))
 	//viper.WriteConfigTo(os.Stdout)
 }
 

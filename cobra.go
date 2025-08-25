@@ -10,28 +10,32 @@ import (
 	"strings"
 )
 
+type CobraCommand interface {
+}
+
 var rootCmd *cobra.Command
 var viperPrefix string
-var configFilename string
 var logFile *os.File
 
+// fail with informative error instead of panic if CobraInit has not been called
 func checkRootCmd(name string) {
 	if rootCmd == nil {
-		cobra.CheckErr(fmt.Errorf("%s called before CobraInit(rootCmd)", name))
+		cobra.CheckErr(fmt.Errorf("%s called before CobraInit", name))
 	}
 }
 
-func checkCobraCmd(name string, cobraCmd interface{}) *cobra.Command {
-	cmd, ok := cobraCmd.(*cobra.Command)
+// cast CobraCommand to *cobra.Command with informative error on failure
+func toCobraCmd(funcName, argName string, arg CobraCommand) *cobra.Command {
+	cmd, ok := arg.(*cobra.Command)
 	if !ok {
-		cobra.CheckErr(fmt.Errorf("%s: cobraCmd not *cobra.Command: %v", name, cobraCmd))
+		cobra.CheckErr(fmt.Errorf("%s: %s type mismatch; expected *cobra.Command, got %v", funcName, argName, arg))
 	}
 	return cmd
 }
 
-func OptionKey(cobraCmd interface{}, key string) string {
+func OptionKey(cobraCmd CobraCommand, key string) string {
 	checkRootCmd("OptionKey")
-	cmd := checkCobraCmd("OptionKey", cobraCmd)
+	cmd := toCobraCmd("OptionKey", "cobraCmd", cobraCmd)
 	prefix := rootCmd.Name() + "."
 	if cmd == rootCmd {
 		prefix += cmd.Name() + "."
@@ -39,10 +43,10 @@ func OptionKey(cobraCmd interface{}, key string) string {
 	return strings.ReplaceAll(prefix+key, "-", "_")
 }
 
-func OptionSwitch(cobraCmd interface{}, name, flag, description string) {
+func OptionSwitch(cobraCmd CobraCommand, name, flag, description string) {
 
 	checkRootCmd("OptionSwitch")
-	cmd := checkCobraCmd("OptionSwitch", cobraCmd)
+	cmd := toCobraCmd("OptionSwitch", "cobraCmd", cobraCmd)
 
 	if cmd == rootCmd {
 		if flag == "" {
@@ -61,10 +65,10 @@ func OptionSwitch(cobraCmd interface{}, name, flag, description string) {
 	}
 }
 
-func OptionString(cobraCmd interface{}, name, flag, defaultValue, description string) {
+func OptionString(cobraCmd CobraCommand, name, flag, defaultValue, description string) {
 
 	checkRootCmd("OptionString")
-	cmd := checkCobraCmd("OptionString", cobraCmd)
+	cmd := toCobraCmd("OptionString", "cobraCmd", cobraCmd)
 
 	if cmd == rootCmd {
 		if flag == "" {
@@ -117,44 +121,38 @@ func closeLog() {
 	}
 }
 
-func initConfig() {
-	checkRootCmd("initConfig")
-	name := strings.ToLower(rootCmd.Name())
-	viper.SetEnvPrefix(name)
-	viper.AutomaticEnv()
-	if configFilename != "" {
-		viper.SetConfigFile(configFilename)
-	} else {
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-		userConfig, err := os.UserConfigDir()
-		cobra.CheckErr(err)
-		viper.AddConfigPath(filepath.Join(home, "."+name))
-		viper.AddConfigPath(filepath.Join(userConfig, name))
-		viper.AddConfigPath(filepath.Join("/etc", name))
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("config")
-	}
-	err := viper.ReadInConfig()
-	if err != nil {
-		_, ok := err.(viper.ConfigFileNotFoundError)
-		if !ok {
-			cobra.CheckErr(err)
+// call from non-root cobra command init
+func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
+	root := toCobraCmd("CobraAddCommand", "cobraRootCmd", cobraRootCmd)
+	switch rootCmd {
+	case nil:
+		// CobraInit has not been called yet, so do so now
+		CobraInit(cobraRootCmd)
+	default:
+		// if rootCmd already set, the argument must match
+		if root != rootCmd {
+			cobra.CheckErr(fmt.Errorf("CobraAddCommand: cobraRootCmd mismatch; got %v, expected %v", root, rootCmd))
 		}
 	}
-	openLog()
-	if viper.ConfigFileUsed() != "" && viper.GetBool("verbose") {
-		log.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	parent := toCobraCmd("CobraAddCommand", "parentCmd", parentCmd)
+	cmd := toCobraCmd("CobraAddCommand", "cobraCmd", cobraCmd)
+	parent.AddCommand(cmd)
 }
 
-func CobraInit(cobraRootCmd interface{}) {
-	var ok bool
-	rootCmd, ok = cobraRootCmd.(*cobra.Command)
-	if !ok {
-		cobra.CheckErr(fmt.Errorf("CobraInit: cobraRootCmd not *cobra.Command: %v", cobraRootCmd))
+// call from root cobra command init
+func CobraInit(cobraRootCmd CobraCommand) {
+
+	root := toCobraCmd("CobraInit", "cobraRootCmd", cobraRootCmd)
+	if rootCmd != nil {
+		// rootCmd has already been set by a call to CobraAddCommand
+		if root == rootCmd {
+			// the argument matches, we're done here
+			return
+		}
+		cobra.CheckErr(fmt.Errorf("CobraInit: rootCmd mismatch; got %v, expected %v", root, rootCmd))
 	}
-	Init(rootCmd.Name(), rootCmd.Version)
+	// rootCmd initialization
+	setName(rootCmd.Name(), rootCmd.Version)
 	cacheDir, err := os.UserCacheDir()
 	cobra.CheckErr(err)
 	defaultCacheDir, err := TildePath(filepath.Join(cacheDir, rootCmd.Name()))

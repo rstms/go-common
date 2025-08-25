@@ -20,15 +20,15 @@ func Expand(pathname string) string {
 	return pathname
 }
 
-func ViperKey(name string) string {
-	if programName == nil {
-		panic("go-common: function called before Init()")
-	}
+func ViperKey(key string) string {
 	var prefix string
-	if *programName != "" {
-		prefix = *programName + "."
+	name := ProgramName()
+	if name != "" {
+		prefix = name + "."
 	}
-	return strings.ToLower(strings.ReplaceAll(prefix+name, "-", "_"))
+	ret := strings.ToLower(strings.ReplaceAll(prefix+key, "-", "_"))
+	log.Printf("Viperkey(%s) returning %s\n", key, ret)
+	return ret
 }
 
 func ViperGetBool(key string) bool {

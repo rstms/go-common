@@ -20,17 +20,33 @@ var ConfirmRejectMessage = "Cowardly refused"
 var programName *string
 var programVersion *string
 
-// must be called before any other functions
-func Init(name, version string) {
+// call Init if not using cobra
+func Init(name, version, configFile string) {
+	log.Printf("Init(%s, %s, %s)\n", name, version, configFile)
+	setName(name, version)
+	configFilename = configFile
+	initConfig()
+}
+
+// called by Init or CobraInitRoot
+func setName(name, version string) {
 	programName = &name
 	programVersion = &version
 }
 
+func checkInit() {
+	if programName == nil || programVersion == nil {
+		panic("go-common: function called before Init or CobraInit")
+	}
+}
+
 func ProgramName() string {
+	checkInit()
 	return *programName
 }
 
 func ProgramVersion() string {
+	checkInit()
 	return *programVersion
 }
 
@@ -57,7 +73,7 @@ func OpenLog() {
 		log.SetOutput(LogFile)
 		log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
 		log.SetFlags(log.Ldate | log.Ltime | log.Lmsgprefix)
-		log.Printf("%s v%s startup\n", *programName, *programVersion)
+		log.Printf("%s v%s startup\n", ProgramName(), ProgramVersion())
 		cobra.OnFinalize(CloseLog)
 	}
 	if ViperGetBool("debug") {

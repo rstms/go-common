@@ -33,17 +33,21 @@ package common
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	yaml "gopkg.in/yaml.v3"
 )
+
+var configFilename string
 
 func ConfigString(header bool) string {
 	checkRootCmd("ConfigString")
@@ -151,4 +155,35 @@ func ConfigEdit() {
 	editor.Stderr = os.Stderr
 	err := editor.Run()
 	cobra.CheckErr(err)
+}
+
+func initConfig() {
+	log.Println("initConfig")
+	name := strings.ToLower(ProgramName())
+	viper.SetEnvPrefix(name)
+	viper.AutomaticEnv()
+	if configFilename != "" {
+		viper.SetConfigFile(configFilename)
+	} else {
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
+		userConfig, err := os.UserConfigDir()
+		cobra.CheckErr(err)
+		viper.AddConfigPath(filepath.Join(home, "."+name))
+		viper.AddConfigPath(filepath.Join(userConfig, name))
+		viper.AddConfigPath(filepath.Join("/etc", name))
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("config")
+	}
+	err := viper.ReadInConfig()
+	if err != nil {
+		_, ok := err.(viper.ConfigFileNotFoundError)
+		if !ok {
+			cobra.CheckErr(err)
+		}
+	}
+	openLog()
+	if viper.ConfigFileUsed() != "" && viper.GetBool("verbose") {
+		log.Println("Using config file:", viper.ConfigFileUsed())
+	}
 }

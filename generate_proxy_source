@@ -42,7 +42,7 @@ gen() {
 add_interfaces() {
     cat *.go | awk '
 	BEGIN {active=0;}
-	/^type .* interface {/ { active=1; }
+	/^type .* interface {/ { active=1; printf("\n"); }
 	{ if ( active ) print $0; }
 	/^}$/ { active=0; }
     '
@@ -51,8 +51,7 @@ add_interfaces() {
 echo "// go-common local proxy functions"
 echo 
 echo "package cmd"
-printf '\nimport (\n\tcommon "%s"\n)\n\n' github.com/rstms/go-common
-
+printf '\nimport (\n\tcommon "%s"\n)\n' github.com/rstms/go-common
 add_interfaces
 
 for src in $(ls *.go | grep -v _test.go); do
