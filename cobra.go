@@ -35,11 +35,11 @@ func toCobraCmd(funcName, argName string, arg CobraCommand) *cobra.Command {
 func OptionKey(cobraCmd CobraCommand, key string) string {
 	checkRootCmd("OptionKey")
 	cmd := toCobraCmd("OptionKey", "cobraCmd", cobraCmd)
-	prefix := rootCmd.Name() + "."
-	if cmd == rootCmd {
+	prefix := ProgramName() + "."
+	if cmd != rootCmd {
 		prefix += cmd.Name() + "."
 	}
-	return strings.ReplaceAll(prefix+key, "-", "_")
+	return strings.ToLower(strings.ReplaceAll(prefix+key, "-", "_"))
 }
 
 func OptionSwitch(cobraCmd CobraCommand, name, flag, description string) {
