@@ -22,10 +22,19 @@ var programVersion *string
 
 // call Init if not using cobra
 func Init(name, version, configFile string) {
-	log.Printf("Init(%s, %s, %s)\n", name, version, configFile)
 	setName(name, version)
 	configFilename = configFile
 	initConfig()
+}
+
+// call Shutdown at exit if not using cobra
+func Shutdown() {
+	shutdown()
+}
+
+// internal shutdown
+func shutdown() {
+	closeLog()
 }
 
 // called by Init or CobraInitRoot
@@ -57,7 +66,7 @@ func CheckErr(err error) {
 	}
 }
 
-func OpenLog() {
+func openLog() {
 	filename := ViperGetString("logfile")
 	LogFile = nil
 	if filename == "stdout" || filename == "-" {
@@ -74,14 +83,13 @@ func OpenLog() {
 		log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
 		log.SetFlags(log.Ldate | log.Ltime | log.Lmsgprefix)
 		log.Printf("%s v%s startup\n", ProgramName(), ProgramVersion())
-		cobra.OnFinalize(CloseLog)
 	}
 	if ViperGetBool("debug") {
 		log.SetFlags(log.Flags() | log.Lshortfile)
 	}
 }
 
-func CloseLog() {
+func closeLog() {
 	if LogFile != nil {
 		log.Println("shutdown")
 		err := LogFile.Close()

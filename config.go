@@ -158,7 +158,6 @@ func ConfigEdit() {
 }
 
 func initConfig() {
-	log.Println("initConfig")
 	name := strings.ToLower(ProgramName())
 	viper.SetEnvPrefix(name)
 	viper.AutomaticEnv()

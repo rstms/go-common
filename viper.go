@@ -27,7 +27,6 @@ func ViperKey(key string) string {
 		prefix = name + "."
 	}
 	ret := strings.ToLower(strings.ReplaceAll(prefix+key, "-", "_"))
-	log.Printf("Viperkey(%s) returning %s\n", key, ret)
 	return ret
 }
 

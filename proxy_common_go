@@ -37,6 +37,10 @@ func Init(name, version, configFile string) {
 	common.Init(name, version, configFile)
 }
 
+func Shutdown() {
+	common.Shutdown()
+}
+
 func ProgramName() string {
 	return common.ProgramName()
 }
@@ -47,14 +51,6 @@ func ProgramVersion() string {
 
 func CheckErr(err error) {
 	common.CheckErr(err)
-}
-
-func OpenLog() {
-	common.OpenLog()
-}
-
-func CloseLog() {
-	common.CloseLog()
 }
 
 func FormatJSON(v any) string {

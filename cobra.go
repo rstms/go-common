@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -88,39 +87,6 @@ func OptionString(cobraCmd CobraCommand, name, flag, defaultValue, description s
 	}
 }
 
-func openLog() {
-	filename := viper.GetString("logfile")
-	logFile = nil
-	if filename == "stdout" || filename == "-" {
-		log.SetOutput(os.Stdout)
-	} else if filename == "stderr" || filename == "" {
-		log.SetOutput(os.Stderr)
-	} else {
-		fp, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
-		if err != nil {
-			log.Fatalf("failed opening log file: %v", err)
-		}
-		logFile = fp
-		log.SetOutput(logFile)
-		log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
-		log.SetFlags(log.Ldate | log.Ltime | log.Lmsgprefix)
-		log.Printf("%s v%s startup\n", rootCmd.Name(), rootCmd.Version)
-		cobra.OnFinalize(closeLog)
-	}
-	if viper.GetBool("debug") {
-		log.SetFlags(log.Flags() | log.Lshortfile)
-	}
-}
-
-func closeLog() {
-	if logFile != nil {
-		log.Println("shutdown")
-		err := logFile.Close()
-		cobra.CheckErr(err)
-		logFile = nil
-	}
-}
-
 // call from non-root cobra command init
 func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
 	root := toCobraCmd("CobraAddCommand", "cobraRootCmd", cobraRootCmd)
@@ -143,12 +109,14 @@ func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
 func CobraInit(cobraRootCmd CobraCommand) {
 
 	root := toCobraCmd("CobraInit", "cobraRootCmd", cobraRootCmd)
-	if rootCmd != nil {
+	switch rootCmd {
+	case nil:
+		rootCmd = root
+	case root:
 		// rootCmd has already been set by a call to CobraAddCommand
-		if root == rootCmd {
-			// the argument matches, we're done here
-			return
-		}
+		return
+	default:
+		// rootCmd must match if non-nil
 		cobra.CheckErr(fmt.Errorf("CobraInit: rootCmd mismatch; got %v, expected %v", root, rootCmd))
 	}
 	// rootCmd initialization
@@ -159,6 +127,7 @@ func CobraInit(cobraRootCmd CobraCommand) {
 	cobra.CheckErr(err)
 
 	cobra.OnInitialize(initConfig)
+	cobra.OnFinalize(shutdown)
 
 	rootCmd.PersistentFlags().StringVar(&configFilename, "config-file", "", "config file")
 	OptionString(rootCmd, "logfile", "", "", "log filename")
