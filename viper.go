@@ -39,7 +39,11 @@ func ViperGetString(key string) string {
 }
 
 func ViperGetStringSlice(key string) []string {
-	return viper.GetStringSlice(ViperKey(key))
+	values := []string{}
+	for _, value := range viper.GetStringSlice(ViperKey(key)) {
+		values = append(values, Expand(value))
+	}
+	return values
 }
 
 func ViperGetInt(key string) int {

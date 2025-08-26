@@ -175,7 +175,7 @@ func initConfig() {
 		}
 	}
 	openLog()
-	if viper.ConfigFileUsed() != "" && viper.GetBool("verbose") {
+	if viper.ConfigFileUsed() != "" && ViperGetBool("verbose") {
 		log.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
