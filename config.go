@@ -47,8 +47,6 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-var configFilename string
-
 func ConfigString(header bool) string {
 	checkRootCmd("ConfigString")
 	var config string
@@ -108,16 +106,11 @@ func configYAML() string {
 
 func ConfigInit(allowClobber bool) string {
 	checkRootCmd("ConfigInit")
-	name := rootCmd.Name()
 	configFilename := viper.ConfigFileUsed()
 	switch configFilename {
 	case "":
-		userConfig, err := os.UserConfigDir()
+		err := initConfigFilename()
 		cobra.CheckErr(err)
-		configDir := filepath.Join(userConfig, name)
-		err = os.MkdirAll(configDir, 0700)
-		cobra.CheckErr(err)
-		configFilename = filepath.Join(configDir, "config.yaml")
 	default:
 		if !allowClobber {
 			cobra.CheckErr(fmt.Errorf("not overwriting current file: %s\n", configFilename))

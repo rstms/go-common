@@ -119,12 +119,21 @@ func CobraInit(cobraRootCmd CobraCommand) {
 		// rootCmd must match if non-nil
 		cobra.CheckErr(fmt.Errorf("CobraInit: rootCmd mismatch; got %v, expected %v", root, rootCmd))
 	}
+
 	// rootCmd initialization
 	setName(rootCmd.Name(), rootCmd.Version)
 	cacheDir, err := os.UserCacheDir()
 	cobra.CheckErr(err)
+
+	err = initConfigFilename()
+	cobra.CheckErr(err)
+
 	defaultCacheDir, err := TildePath(filepath.Join(cacheDir, rootCmd.Name()))
 	cobra.CheckErr(err)
+
+	configDir, err := os.UserConfigDir()
+	cobra.CheckErr(err)
+	configFilename = filepath.Join(configDir, rootCmd.Name(), "config.yaml")
 
 	cobra.OnInitialize(initConfig)
 	cobra.OnFinalize(shutdown)

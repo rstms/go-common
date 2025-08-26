@@ -3,9 +3,10 @@ package common
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 const Version = "0.1.33"
@@ -19,11 +20,16 @@ var ConfirmRejectMessage = "Cowardly refused"
 // these are pointers so we'll panic if Init has not been called
 var programName *string
 var programVersion *string
+var configFilename string
 
 // call Init if not using cobra
 func Init(name, version, configFile string) {
 	setName(name, version)
-	configFilename = configFile
+	if configFile != "" {
+		configFilename = configFile
+	}
+	err := initConfigFilename()
+	CheckErr(err)
 	initConfig()
 }
 
@@ -57,6 +63,21 @@ func ProgramName() string {
 func ProgramVersion() string {
 	checkInit()
 	return *programVersion
+}
+
+// set configFilename, create default config dir
+func initConfigFilename() error {
+	userConfig, err := os.UserConfigDir()
+	if err != nil {
+		return err
+	}
+	configDir := filepath.Join(userConfig, strings.ToLower(ProgramName()))
+	err = os.MkdirAll(configDir, 0700)
+	if err != nil {
+		return err
+	}
+	configFilename = filepath.Join(configDir, "config.yaml")
+	return nil
 }
 
 func CheckErr(err error) {
@@ -93,7 +114,9 @@ func closeLog() {
 	if LogFile != nil {
 		log.Println("shutdown")
 		err := LogFile.Close()
-		cobra.CheckErr(err)
+		if err != nil {
+			log.Fatalf("failed closing log file: %v", err)
+		}
 		LogFile = nil
 	}
 }
