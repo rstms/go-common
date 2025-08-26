@@ -109,9 +109,15 @@ func ConfigInit(allowClobber bool) string {
 	configFilename := viper.ConfigFileUsed()
 	switch configFilename {
 	case "":
-		var err error
-		configFilename, err = initConfigFilename()
+		userConfigDir, err := os.UserConfigDir()
 		cobra.CheckErr(err)
+		configDir := filepath.Join(userConfigDir, ProgramName())
+		if !IsDir(configDir) {
+			err := os.Mkdir(configDir, 0700)
+			cobra.CheckErr(err)
+		}
+		configFilename = filepath.Join(configDir, "config.yaml")
+
 	default:
 		if !allowClobber {
 			cobra.CheckErr(fmt.Errorf("not overwriting current file: %s\n", configFilename))

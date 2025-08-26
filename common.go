@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 const Version = "0.1.36"
@@ -25,12 +23,7 @@ var configFilename string
 // call Init if not using cobra
 func Init(name, version, configFile string) {
 	setName(name, version)
-	if configFile != "" {
-		configFilename = configFile
-	}
-	var err error
-	configFilename, err = initConfigFilename()
-	CheckErr(err)
+	configFilename = configFile
 	initConfig()
 }
 
@@ -64,21 +57,6 @@ func ProgramName() string {
 func ProgramVersion() string {
 	checkInit()
 	return *programVersion
-}
-
-// create default config dir, return default config filename
-func initConfigFilename() (string, error) {
-	userConfig, err := os.UserConfigDir()
-	if err != nil {
-		return "", err
-	}
-	configDir := filepath.Join(userConfig, strings.ToLower(ProgramName()))
-	err = os.MkdirAll(configDir, 0700)
-	if err != nil {
-		return "", err
-	}
-	filename := filepath.Join(configDir, "config.yaml")
-	return filename, nil
 }
 
 func CheckErr(err error) {

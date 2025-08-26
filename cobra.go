@@ -131,10 +131,7 @@ func CobraInit(cobraRootCmd CobraCommand) {
 	cobra.OnInitialize(initConfig)
 	cobra.OnFinalize(shutdown)
 
-	defaultConfigFilename, err := initConfigFilename()
-	cobra.CheckErr(err)
-
-	rootCmd.PersistentFlags().StringVar(&configFilename, "config-file", defaultConfigFilename, "config file")
+	rootCmd.PersistentFlags().StringVar(&configFilename, "config-file", "", "config file")
 	OptionString(rootCmd, "logfile", "l", "stderr", "log filename")
 	OptionSwitch(rootCmd, "verbose", "v", "enable status output")
 	OptionSwitch(rootCmd, "debug", "d", "enable diagnostic output")
