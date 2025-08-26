@@ -109,7 +109,8 @@ func ConfigInit(allowClobber bool) string {
 	configFilename := viper.ConfigFileUsed()
 	switch configFilename {
 	case "":
-		err := initConfigFilename()
+		var err error
+		configFilename, err = initConfigFilename()
 		cobra.CheckErr(err)
 	default:
 		if !allowClobber {

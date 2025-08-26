@@ -28,7 +28,8 @@ func Init(name, version, configFile string) {
 	if configFile != "" {
 		configFilename = configFile
 	}
-	err := initConfigFilename()
+	var err error
+	configFilename, err = initConfigFilename()
 	CheckErr(err)
 	initConfig()
 }
@@ -65,19 +66,19 @@ func ProgramVersion() string {
 	return *programVersion
 }
 
-// set configFilename, create default config dir
-func initConfigFilename() error {
+// create default config dir, return default config filename
+func initConfigFilename() (string, error) {
 	userConfig, err := os.UserConfigDir()
 	if err != nil {
-		return err
+		return "", err
 	}
 	configDir := filepath.Join(userConfig, strings.ToLower(ProgramName()))
 	err = os.MkdirAll(configDir, 0700)
 	if err != nil {
-		return err
+		return "", err
 	}
-	configFilename = filepath.Join(configDir, "config.yaml")
-	return nil
+	filename := filepath.Join(configDir, "config.yaml")
+	return filename, nil
 }
 
 func CheckErr(err error) {

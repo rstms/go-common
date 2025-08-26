@@ -125,20 +125,16 @@ func CobraInit(cobraRootCmd CobraCommand) {
 	cacheDir, err := os.UserCacheDir()
 	cobra.CheckErr(err)
 
-	err = initConfigFilename()
-	cobra.CheckErr(err)
-
 	defaultCacheDir, err := TildePath(filepath.Join(cacheDir, rootCmd.Name()))
 	cobra.CheckErr(err)
-
-	configDir, err := os.UserConfigDir()
-	cobra.CheckErr(err)
-	configFilename = filepath.Join(configDir, rootCmd.Name(), "config.yaml")
 
 	cobra.OnInitialize(initConfig)
 	cobra.OnFinalize(shutdown)
 
-	rootCmd.PersistentFlags().StringVar(&configFilename, "config-file", "", "config file")
+	defaultConfigFilename, err := initConfigFilename()
+	cobra.CheckErr(err)
+
+	rootCmd.PersistentFlags().StringVar(&configFilename, "config-file", defaultConfigFilename, "config file")
 	OptionString(rootCmd, "logfile", "l", "stderr", "log filename")
 	OptionSwitch(rootCmd, "verbose", "v", "enable status output")
 	OptionSwitch(rootCmd, "debug", "d", "enable diagnostic output")
