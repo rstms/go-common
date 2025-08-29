@@ -95,6 +95,7 @@ func configYAML() string {
 	configMap := viper.AllSettings()
 	for _, key := range viper.AllKeys() {
 		if strings.HasPrefix(key, ProgramName()+".config") {
+			fmt.Printf("deleting: %s\n", key)
 			delete(configMap, key)
 		}
 	}
