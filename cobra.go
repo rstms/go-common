@@ -139,8 +139,8 @@ func CobraInit(cobraRootCmd CobraCommand) {
 
 	CobraAddCommand(rootCmd, rootCmd, configCmd)
 	OptionSwitch(configCmd, "no-header", "", "suppress config header comments")
-	CobraAddCommand(rootCmd, rootCmd, configCatCmd)
-	CobraAddCommand(rootCmd, rootCmd, configEditCmd)
-	CobraAddCommand(rootCmd, rootCmd, configFileCmd)
-	CobraAddCommand(rootCmd, rootCmd, configInitCmd)
+	CobraAddCommand(rootCmd, configCmd, configCatCmd)
+	CobraAddCommand(rootCmd, configCmd, configEditCmd)
+	CobraAddCommand(rootCmd, configCmd, configFileCmd)
+	CobraAddCommand(rootCmd, configCmd, configInitCmd)
 }
