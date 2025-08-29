@@ -100,7 +100,13 @@ func configYAML() string {
 	var config map[string]any
 	err = json.Unmarshal(data, &config)
 	cobra.CheckErr(err)
-	delete(config, ProgramName()+".config")
+	var configMap map[string]any
+	configMap, ok := config[ProgramName()].(map[string]any)
+	if !ok {
+		cobra.CheckErr(Fatalf("failed reading configMap"))
+	}
+	delete(configMap, "config")
+
 	/*
 		for _, key := range keys {
 			fmt.Printf("key: %s\n", key)
