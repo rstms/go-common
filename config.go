@@ -93,6 +93,7 @@ func configHeader() string {
 
 func configYAML() string {
 	configMap := viper.AllSettings()
+	fmt.Printf(ProgramName() + ".config")
 	delete(configMap, ProgramName()+".config")
 	var buf bytes.Buffer
 	func() {
