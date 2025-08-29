@@ -94,6 +94,7 @@ func configHeader() string {
 
 func configYAML() string {
 	viperConfig := viper.AllSettings()
+	/*
 	data, err := json.MarshalIndent(&viperConfig, "", "  ")
 	cobra.CheckErr(err)
 	fmt.Printf("before: %s\n", string(data))
@@ -101,7 +102,8 @@ func configYAML() string {
 	err = json.Unmarshal(data, &config)
 	cobra.CheckErr(err)
 	var configMap map[string]any
-	configMap, ok := config[ProgramName()].(map[string]any)
+	*/
+	configMap, ok := viperConfig[ProgramName()].(map[string]any)
 	if !ok {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
 	}
@@ -116,14 +118,14 @@ func configYAML() string {
 				delete(configMap, key)
 			}
 		}
-	*/
 	fmt.Printf("after: %s\n", FormatJSON(config))
+	*/
 	var buf bytes.Buffer
 	func() {
 		encoder := yaml.NewEncoder(&buf)
 		defer encoder.Close()
 		encoder.SetIndent(2)
-		err := encoder.Encode(&config)
+		err := encoder.Encode(&viperConfig)
 		cobra.CheckErr(err)
 	}()
 	return buf.String()
