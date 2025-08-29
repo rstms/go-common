@@ -94,6 +94,7 @@ func configHeader() string {
 func configYAML() string {
 	configMap := viper.AllSettings()
 	keys := viper.AllKeys()
+	fmt.Printf("before: %s\n", FormatJSON(configMap))
 	for _, key := range keys {
 		fmt.Printf("key: %s\n", key)
 
@@ -102,6 +103,7 @@ func configYAML() string {
 			delete(configMap, key)
 		}
 	}
+	fmt.Printf("after: %s\n", FormatJSON(configMap))
 	var buf bytes.Buffer
 	func() {
 		encoder := yaml.NewEncoder(&buf)
