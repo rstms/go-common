@@ -136,4 +136,11 @@ func CobraInit(cobraRootCmd CobraCommand) {
 	OptionSwitch(rootCmd, "verbose", "v", "enable status output")
 	OptionSwitch(rootCmd, "debug", "d", "enable diagnostic output")
 	OptionString(rootCmd, "cache-dir", "", defaultCacheDir, "cache directory")
+
+	CobraAddCommand(rootCmd, rootCmd, configCmd)
+	OptionSwitch(configCmd, "no-header", "", "suppress config header comments")
+	CobraAddCommand(rootCmd, rootCmd, configCatCmd)
+	CobraAddCommand(rootCmd, rootCmd, configEditCmd)
+	CobraAddCommand(rootCmd, rootCmd, configFileCmd)
+	CobraAddCommand(rootCmd, rootCmd, configInitCmd)
 }

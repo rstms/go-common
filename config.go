@@ -186,3 +186,62 @@ func initConfig() {
 		log.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
+
+var configCmd = &cobra.Command{
+	Use:   "config",
+	Short: "config subcommands",
+	Long: `
+subcommand for viewing or modifying the config file
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(ConfigString(!ViperGetBool("config.no_header")))
+	},
+}
+
+var configCatCmd = &cobra.Command{
+	Use:   "cat",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(ConfigString(true))
+	},
+}
+
+var configEditCmd = &cobra.Command{
+	Use:   "edit",
+	Short: "edit the config file",
+	Long: `
+edit the config file using the system editor.  If no config file exists, 
+create one in the default location before editing.
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		ConfigEdit()
+	},
+}
+
+var configFileCmd = &cobra.Command{
+	Use:   "file",
+	Short: "output the config file",
+	Long: `
+write the pathname of the active config file to stdout
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(viper.ConfigFileUsed())
+	},
+}
+
+var configInitCmd = &cobra.Command{
+	Use:   "init",
+	Short: "initialize config file",
+	Long: `
+write a YAML config file to the default location
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		ConfigInit(ViperGetBool("force"))
+	},
+}
