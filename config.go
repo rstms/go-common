@@ -95,7 +95,7 @@ func configYAML() string {
 	configMap := viper.AllSettings()
 	//keys := viper.AllKeys()
 	fmt.Printf("before: %s\n", FormatJSON(configMap))
-	delete(configMap, "config")
+	delete(configMap, ProgramName()+".config")
 	/*
 		for _, key := range keys {
 			fmt.Printf("key: %s\n", key)
