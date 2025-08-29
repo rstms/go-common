@@ -93,6 +93,7 @@ func configHeader() string {
 
 func configYAML() string {
 	configMap := viper.AllSettings()
+	configMap["config"] = nil
 	var buf bytes.Buffer
 	func() {
 		encoder := yaml.NewEncoder(&buf)
