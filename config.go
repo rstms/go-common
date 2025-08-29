@@ -32,6 +32,7 @@ package common
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -92,11 +93,14 @@ func configHeader() string {
 }
 
 func configYAML() string {
-	configMap := viper.AllSettings()
-	//keys := viper.AllKeys()
-	fmt.Printf("before: %s\n", FormatJSON(configMap))
-	fmt.Printf("delete: %s\n", ProgramName()+".config")
-	delete(configMap, ProgramName()+".config")
+	viperConfig := viper.AllSettings()
+	data, err := json.MarshalIndent(&viperConfig, "", "  ")
+	cobra.CheckErr(err)
+	fmt.Printf("before: %s\n", string(data))
+	var config map[string]any
+	err = json.Unmarshal(data, &config)
+	cobra.CheckErr(err)
+	delete(config, ProgramName()+".config")
 	/*
 		for _, key := range keys {
 			fmt.Printf("key: %s\n", key)
@@ -107,13 +111,13 @@ func configYAML() string {
 			}
 		}
 	*/
-	fmt.Printf("after: %s\n", FormatJSON(configMap))
+	fmt.Printf("after: %s\n", FormatJSON(config))
 	var buf bytes.Buffer
 	func() {
 		encoder := yaml.NewEncoder(&buf)
 		defer encoder.Close()
 		encoder.SetIndent(2)
-		err := encoder.Encode(&configMap)
+		err := encoder.Encode(&config)
 		cobra.CheckErr(err)
 	}()
 	return buf.String()
