@@ -93,6 +93,9 @@ func configHeader() string {
 
 func configYAML() string {
 	configMap := viper.AllSettings()
+	for _, key := range viper.AllKeys() {
+		fmt.Printf("%s\n", key)
+	}
 	fmt.Printf("%s\n", ProgramName()+".config")
 	delete(configMap, ProgramName()+".config")
 	var buf bytes.Buffer
