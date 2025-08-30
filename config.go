@@ -102,6 +102,9 @@ func configYAML() string {
 		cobra.CheckErr(err)
 		var configMap map[string]any
 	*/
+	if ViperGetBool("debug") {
+		log.Printf("configYAML: viperConfig: %s\n", FormatJSON(viperConfig))
+	}
 	configMap, ok := viperConfig[ProgramName()].(map[string]any)
 	if !ok {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
