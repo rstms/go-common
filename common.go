@@ -39,6 +39,7 @@ func shutdown() {
 
 // called by Init or CobraInitRoot
 func setName(name, version string) {
+	log.Printf("setName(%s, %s)\n", name, version)
 	programName = &name
 	programVersion = &version
 }

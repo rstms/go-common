@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -109,6 +110,7 @@ func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
 func CobraInit(cobraRootCmd CobraCommand) {
 
 	root := toCobraCmd("CobraInit", "cobraRootCmd", cobraRootCmd)
+	log.Printf("CobraInit: name=%s\n", root.Name())
 	switch rootCmd {
 	case nil:
 		rootCmd = root
