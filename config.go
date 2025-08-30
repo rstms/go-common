@@ -93,45 +93,18 @@ func configHeader() string {
 
 func configYAML() string {
 
-	log.Printf("configYAML: ProgramName()=%s debug=%v\n", ProgramName(), ViperGetBool("debug"))
+	// get the viper config as a map[string]any
 	viperConfig := viper.AllSettings()
-	/*
-		data, err := json.MarshalIndent(&viperConfig, "", "  ")
-		cobra.CheckErr(err)
-		fmt.Printf("before: %s\n", string(data))
-		var config map[string]any
-		err = json.Unmarshal(data, &config)
-		cobra.CheckErr(err)
-		var configMap map[string]any
-	*/
-	log.Printf("configYAML: viperConfig: %+v\n", viperConfig)
-	//configMap, ok := viperConfig[ProgramName()].(*map[string]any)
+
+	// remove the config command flag(s) from the output
 	name := strings.ToLower(strings.ReplaceAll(ProgramName(), "-", "_"))
-	log.Printf("configYAML: name: %s\n", name)
 	configMap, ok := viperConfig[name].(map[string]any)
 	if !ok {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
 	}
-	log.Printf("configMap: %+v\n", configMap)
-	configValue, ok := configMap["config"].(map[string]any)
-	if !ok {
-		cobra.CheckErr(Fatalf("failed reading configValue"))
-	}
-	log.Printf("configValue: %+v\n", configValue)
+	delete(configMap, "config")
 
-	//delete(*configMap, "config")
-
-	/*
-			for _, key := range keys {
-				fmt.Printf("key: %s\n", key)
-
-				if strings.HasPrefix(key, ProgramName()+".config") {
-					fmt.Printf("  deleting: %s\n", key)
-					delete(configMap, key)
-				}
-			}
-		fmt.Printf("after: %s\n", FormatJSON(config))
-	*/
+	// format as 2-space indented YAML
 	var buf bytes.Buffer
 	func() {
 		encoder := yaml.NewEncoder(&buf)
