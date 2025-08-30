@@ -15,17 +15,25 @@ import (
 const DEFAULT_IDLE_CONN_TIMEOUT = 5
 const DEFAULT_DISABLE_KEEPALIVES = false
 
-type APIClient struct {
-	Client  *http.Client
+type APIClient interface {
+	Close()
+	Get(path string, response interface{}) (string, error)
+	Post(path string, request, response interface{}, headers *map[string]string) (string, error)
+	Put(path string, request, response interface{}, headers *map[string]string) (string, error)
+	Delete(path string, response interface{}) (string, error)
+}
+
+type client struct {
+	c       *http.Client
 	URL     string
 	Headers map[string]string
 	verbose bool
 	debug   bool
 }
 
-func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (*APIClient, error) {
+func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (APIClient, error) {
 
-	api := APIClient{
+	api := client{
 		URL:     url,
 		Headers: make(map[string]string),
 		verbose: ViperGetBool("verbose"),
@@ -79,33 +87,33 @@ func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[st
 		transport.TLSClientConfig = &tlsConfig
 	}
 
-	api.Client = &http.Client{Transport: &transport}
+	api.c = &http.Client{Transport: &transport}
 
 	return &api, nil
 }
 
-func (a *APIClient) Close() {
-	a.Client.CloseIdleConnections()
-	a.Client = nil
+func (c *client) Close() {
+	c.c.CloseIdleConnections()
+	c.c = nil
 }
 
-func (a *APIClient) Get(path string, response interface{}) (string, error) {
-	return a.request("GET", path, nil, response, nil)
+func (c *client) Get(path string, response interface{}) (string, error) {
+	return c.request("GET", path, nil, response, nil)
 }
 
-func (a *APIClient) Post(path string, request, response interface{}, headers *map[string]string) (string, error) {
-	return a.request("POST", path, request, response, headers)
+func (c *client) Post(path string, request, response interface{}, headers *map[string]string) (string, error) {
+	return c.request("POST", path, request, response, headers)
 }
 
-func (a *APIClient) Put(path string, request, response interface{}, headers *map[string]string) (string, error) {
-	return a.request("PUT", path, request, response, headers)
+func (c *client) Put(path string, request, response interface{}, headers *map[string]string) (string, error) {
+	return c.request("PUT", path, request, response, headers)
 }
 
-func (a *APIClient) Delete(path string, response interface{}) (string, error) {
-	return a.request("DELETE", path, nil, response, nil)
+func (c *client) Delete(path string, response interface{}) (string, error) {
+	return c.request("DELETE", path, nil, response, nil)
 }
 
-func (a *APIClient) request(method, path string, requestData, responseData interface{}, headers *map[string]string) (string, error) {
+func (c *client) request(method, path string, requestData, responseData interface{}, headers *map[string]string) (string, error) {
 	var requestBytes []byte
 	var err error
 	switch requestData.(type) {
@@ -119,13 +127,13 @@ func (a *APIClient) request(method, path string, requestData, responseData inter
 		}
 	}
 
-	request, err := http.NewRequest(method, a.URL+path, bytes.NewBuffer(requestBytes))
+	request, err := http.NewRequest(method, c.URL+path, bytes.NewBuffer(requestBytes))
 	if err != nil {
 		return "", Fatalf("failed creating %s request: %v", method, err)
 	}
 
 	// add the headers set up at instance init
-	for key, value := range a.Headers {
+	for key, value := range c.Headers {
 		request.Header.Add(key, value)
 	}
 
@@ -136,9 +144,9 @@ func (a *APIClient) request(method, path string, requestData, responseData inter
 		}
 	}
 
-	if a.verbose {
-		log.Printf("<-- %s %s (%d bytes)", method, a.URL+path, len(requestBytes))
-		if a.debug {
+	if c.verbose {
+		log.Printf("<-- %s %s (%d bytes)", method, c.URL+path, len(requestBytes))
+		if c.debug {
 			log.Println("BEGIN-REQUEST-HEADER")
 			for key, value := range request.Header {
 				log.Printf("%s: %s\n", key, value)
@@ -150,7 +158,7 @@ func (a *APIClient) request(method, path string, requestData, responseData inter
 		}
 	}
 
-	response, err := a.Client.Do(request)
+	response, err := c.c.Do(request)
 	if err != nil {
 		return "", Fatalf("request failed: %v", err)
 	}
@@ -159,9 +167,9 @@ func (a *APIClient) request(method, path string, requestData, responseData inter
 	if err != nil {
 		return "", Fatalf("failure reading response body: %v", err)
 	}
-	if a.verbose {
+	if c.verbose {
 		log.Printf("--> '%s' (%d bytes)\n", response.Status, len(body))
-		if a.debug {
+		if c.debug {
 			log.Println("BEGIN-RESPONSE-BODY")
 			log.Println(string(body))
 			log.Println("END-RESPONSE-BODY")
