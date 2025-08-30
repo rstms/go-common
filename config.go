@@ -105,12 +105,14 @@ func configYAML() string {
 		var configMap map[string]any
 	*/
 	log.Printf("configYAML: viperConfig: %s\n", FormatJSON(viperConfig))
-	configMap, ok := viperConfig[ProgramName()].(*map[string]any)
+	//configMap, ok := viperConfig[ProgramName()].(*map[string]any)
+	configMap, ok := viperConfig[ProgramName()]
 	if !ok {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
 	}
 	log.Printf("configMap: %v\n", configMap)
-	delete(*configMap, "config")
+
+	//delete(*configMap, "config")
 
 	/*
 			for _, key := range keys {
