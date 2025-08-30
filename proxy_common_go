@@ -13,6 +13,10 @@ type Sendmail interface {
 	Send(to, from, subject string, body []byte) error
 }
 
+func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (*APIClient, error) {
+	return common.NewAPIClient(prefix, url, certFile, keyFile, caFile, headers)
+}
+
 func OptionKey(cobraCmd CobraCommand, key string) string {
 	return common.OptionKey(cobraCmd, key)
 }
