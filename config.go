@@ -92,6 +92,7 @@ func configHeader() string {
 }
 
 func configYAML() string {
+	log.Printf("configYAML: debug=%v\n", ViperGetBool("debug"))
 	viperConfig := viper.AllSettings()
 	/*
 		data, err := json.MarshalIndent(&viperConfig, "", "  ")
@@ -103,7 +104,6 @@ func configYAML() string {
 		var configMap map[string]any
 	*/
 	if ViperGetBool("debug") {
-		log.Println("configYAML: debug")
 		log.Printf("configYAML: viperConfig: %s\n", FormatJSON(viperConfig))
 	}
 	configMap, ok := viperConfig[ProgramName()].(map[string]any)
