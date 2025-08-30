@@ -32,7 +32,6 @@ package common
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -95,13 +94,13 @@ func configHeader() string {
 func configYAML() string {
 	viperConfig := viper.AllSettings()
 	/*
-	data, err := json.MarshalIndent(&viperConfig, "", "  ")
-	cobra.CheckErr(err)
-	fmt.Printf("before: %s\n", string(data))
-	var config map[string]any
-	err = json.Unmarshal(data, &config)
-	cobra.CheckErr(err)
-	var configMap map[string]any
+		data, err := json.MarshalIndent(&viperConfig, "", "  ")
+		cobra.CheckErr(err)
+		fmt.Printf("before: %s\n", string(data))
+		var config map[string]any
+		err = json.Unmarshal(data, &config)
+		cobra.CheckErr(err)
+		var configMap map[string]any
 	*/
 	configMap, ok := viperConfig[ProgramName()].(map[string]any)
 	if !ok {
@@ -110,15 +109,15 @@ func configYAML() string {
 	delete(configMap, "config")
 
 	/*
-		for _, key := range keys {
-			fmt.Printf("key: %s\n", key)
+			for _, key := range keys {
+				fmt.Printf("key: %s\n", key)
 
-			if strings.HasPrefix(key, ProgramName()+".config") {
-				fmt.Printf("  deleting: %s\n", key)
-				delete(configMap, key)
+				if strings.HasPrefix(key, ProgramName()+".config") {
+					fmt.Printf("  deleting: %s\n", key)
+					delete(configMap, key)
+				}
 			}
-		}
-	fmt.Printf("after: %s\n", FormatJSON(config))
+		fmt.Printf("after: %s\n", FormatJSON(config))
 	*/
 	var buf bytes.Buffer
 	func() {
