@@ -32,18 +32,18 @@ func ViperKey(key string) string {
 
 func ViperGetBool(key string) bool {
 	viperKey := ViperKey(key)
-	value := viper.GetBool(key)
+	value := viper.GetBool(viperKey)
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperGetBool(%s) [%s] returning %v", key, viperKey, value)
+		log.Printf("ViperGetBool(%s) -> %s=%v\n", key, viperKey, value)
 	}
 	return value
 }
 
 func ViperGetString(key string) string {
 	viperKey := ViperKey(key)
-	value := Expand(viper.GetString(ViperKey(key)))
+	value := Expand(viper.GetString(viperKey))
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperGetString(%s) [%s] returning %s", key, viperKey, value)
+		log.Printf("ViperGetString(%s) -> %s=%v\n", key, viperKey, value)
 	}
 	return value
 }
@@ -55,7 +55,7 @@ func ViperGetStringSlice(key string) []string {
 		values = append(values, Expand(value))
 	}
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperGetStringSlice(%s) [%s] returning %v", key, viperKey, values)
+		log.Printf("ViperGetStringSlice(%s) -> %s=%v\n", key, viperKey, values)
 	}
 	return values
 }
@@ -64,7 +64,7 @@ func ViperGetInt(key string) int {
 	viperKey := ViperKey(key)
 	value := viper.GetInt(viperKey)
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperGetInt(%s) [%s] returning %d", key, viperKey, value)
+		log.Printf("ViperGetInt(%s) -> %s=%d\n", key, viperKey, value)
 	}
 	return value
 }
@@ -73,7 +73,7 @@ func ViperGetInt64(key string) int64 {
 	viperKey := ViperKey(key)
 	value := viper.GetInt64(viperKey)
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperGetInt64(%s) [%s] returning %d", key, viperKey, value)
+		log.Printf("ViperGetInt64(%s) -> %s=%d\n", key, viperKey, value)
 	}
 	return value
 }
@@ -82,7 +82,7 @@ func ViperSet(key string, value any) {
 	viperKey := ViperKey(key)
 	viper.Set(viperKey, value)
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperSet(%s) [%s] set %v", key, viperKey, value)
+		log.Printf("ViperSet(%s) %s=%v\n", key, viperKey, value)
 	}
 }
 
@@ -90,6 +90,6 @@ func ViperSetDefault(key string, value any) {
 	viperKey := ViperKey(key)
 	viper.SetDefault(viperKey, value)
 	if viper.GetBool(ViperKey("debug")) {
-		log.Printf("ViperSetDefault(%s) [%s] set %v", key, viperKey, value)
+		log.Printf("ViperSetDefault(%s) %s=%v\n", key, viperKey, value)
 	}
 }
