@@ -109,6 +109,7 @@ func configYAML() string {
 	if !ok {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
 	}
+	log.Printf("configMap: %v\n", configMap)
 	delete(*configMap, "config")
 
 	/*
