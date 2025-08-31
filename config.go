@@ -132,7 +132,12 @@ func ConfigInit(allowClobber bool) string {
 
 	default:
 		if !allowClobber {
-			cobra.CheckErr(fmt.Errorf("not overwriting current file: %s\n", configFilename))
+			data, err := os.ReadFile(configFilename)
+			cobra.CheckErr(err)
+			// ok to clobber existing file containing all whitespace
+			if len(strings.TrimSpace(string(data))) != 0 {
+				cobra.CheckErr(fmt.Errorf("not overwriting current file: %s\n", configFilename))
+			}
 		}
 	}
 
