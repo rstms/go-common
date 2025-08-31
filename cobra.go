@@ -87,6 +87,29 @@ func OptionString(cobraCmd CobraCommand, name, flag, defaultValue, description s
 	}
 }
 
+func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, description string) {
+
+	checkRootCmd("OptionInt")
+	cmd := toCobraCmd("OptionInt", "cobraCmd", cobraCmd)
+
+	if cmd == rootCmd {
+		if flag == "" {
+			rootCmd.PersistentFlags().Int(name, defaultValue, description)
+		} else {
+			rootCmd.PersistentFlags().IntP(name, flag, defaultValue, description)
+		}
+
+		viper.BindPFlag(OptionKey(cmd, name), rootCmd.PersistentFlags().Lookup(name))
+	} else {
+		if flag == "" {
+			cmd.PersistentFlags().Int(name, defaultValue, description)
+		} else {
+			cmd.PersistentFlags().IntP(name, flag, defaultValue, description)
+		}
+		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
+	}
+}
+
 // call from non-root cobra command init
 func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
 	root := toCobraCmd("CobraAddCommand", "cobraRootCmd", cobraRootCmd)
