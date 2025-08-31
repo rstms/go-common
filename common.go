@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const Version = "0.2.21"
+const Version = "0.2.22"
 
 var LogFile *os.File
 
