@@ -125,6 +125,10 @@ func ViperKey(key string) string {
 	return common.ViperKey(key)
 }
 
+func ViperGet(key string) any {
+	return common.ViperGet(key)
+}
+
 func ViperGetBool(key string) bool {
 	return common.ViperGetBool(key)
 }

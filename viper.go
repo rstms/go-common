@@ -30,6 +30,15 @@ func ViperKey(key string) string {
 	return ret
 }
 
+func ViperGet(key string) any {
+	viperKey := ViperKey(key)
+	value := viper.Get(viperKey)
+	if viper.GetBool(ViperKey("debug")) {
+		log.Printf("ViperGet(%s) -> %s=%v\n", key, viperKey, value)
+	}
+	return value
+}
+
 func ViperGetBool(key string) bool {
 	viperKey := ViperKey(key)
 	value := viper.GetBool(viperKey)
