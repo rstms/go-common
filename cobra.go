@@ -110,7 +110,6 @@ func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
 func CobraInit(cobraRootCmd CobraCommand) {
 
 	root := toCobraCmd("CobraInit", "cobraRootCmd", cobraRootCmd)
-	log.Printf("CobraInit: name=%s\n", root.Name())
 	switch rootCmd {
 	case nil:
 		rootCmd = root
