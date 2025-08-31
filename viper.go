@@ -60,6 +60,18 @@ func ViperGetStringSlice(key string) []string {
 	return values
 }
 
+func ViperGetStringMapString(key string) map[string]string {
+	viperKey := ViperKey(key)
+	values := make(map[string]string)
+	for key, value := range viper.GetStringMapString(viperKey) {
+		values[key] = Expand(value)
+	}
+	if viper.GetBool(ViperKey("debug")) {
+		log.Printf("ViperGetStringMapString(%s) -> %s=%v\n", key, viperKey, values)
+	}
+	return values
+}
+
 func ViperGetInt(key string) int {
 	viperKey := ViperKey(key)
 	value := viper.GetInt(viperKey)

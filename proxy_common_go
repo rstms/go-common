@@ -137,6 +137,10 @@ func ViperGetStringSlice(key string) []string {
 	return common.ViperGetStringSlice(key)
 }
 
+func ViperGetStringMapString(key string) map[string]string {
+	return common.ViperGetStringMapString(key)
+}
+
 func ViperGetInt(key string) int {
 	return common.ViperGetInt(key)
 }
