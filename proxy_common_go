@@ -77,6 +77,10 @@ func ConfigString(header bool) string {
 	return common.ConfigString(header)
 }
 
+func EncodeYAML(value any) string {
+	return common.EncodeYAML(value)
+}
+
 func ConfigInit(allowClobber bool) string {
 	return common.ConfigInit(allowClobber)
 }
