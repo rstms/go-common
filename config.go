@@ -103,10 +103,10 @@ func configYAML() string {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
 	}
 	delete(configMap, "config")
-	return EncodeYAML(&viperConfig)
+	return FormatYAML(&viperConfig)
 }
 
-func EncodeYAML(value any) string {
+func FormatYAML(value any) string {
 	// format as 2-space indented YAML
 	var buf bytes.Buffer
 	func() {
