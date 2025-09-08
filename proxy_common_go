@@ -65,6 +65,10 @@ func ProgramVersion() string {
 	return common.ProgramVersion()
 }
 
+func ConfigDir() string {
+	return common.ConfigDir()
+}
+
 func CheckErr(err error) {
 	common.CheckErr(err)
 }

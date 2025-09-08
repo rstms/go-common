@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 const Version = "0.2.31"
@@ -57,6 +59,12 @@ func ProgramName() string {
 func ProgramVersion() string {
 	checkInit()
 	return *programVersion
+}
+
+func ConfigDir() string {
+	checkInit()
+	dir, _ := filepath.Split(configFilename)
+	return strings.TrimRight(dir, string(filepath.Separator))
 }
 
 func CheckErr(err error) {

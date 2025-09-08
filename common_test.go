@@ -21,17 +21,17 @@ func TestViperGet(t *testing.T) {
 
 func TestLog(t *testing.T) {
 	initTestConfig(t)
-	OpenLog()
+	openLog()
 	log.Println("log message")
-	CloseLog()
+	closeLog()
 }
 
 func TestDebugLog(t *testing.T) {
 	initTestConfig(t)
 	ViperSet("debug", true)
-	OpenLog()
+	openLog()
 	log.Println("log message")
-	CloseLog()
+	closeLog()
 }
 
 func TestHexDump(t *testing.T) {
@@ -60,4 +60,12 @@ func TestFatal(t *testing.T) {
 func TestWarning(t *testing.T) {
 	Warning("string warning")
 	Warning("formatted warning: %v", true)
+}
+
+func TestConfigDir(t *testing.T) {
+	initTestConfig(t)
+	cfgDir := ConfigDir()
+	require.NotEmpty(t, cfgDir)
+	require.True(t, IsDir(cfgDir))
+	require.Equal(t, "testdata", cfgDir)
 }
