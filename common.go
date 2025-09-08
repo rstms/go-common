@@ -93,7 +93,7 @@ func openLog() {
 		log.Printf("%s v%s startup\n", ProgramName(), ProgramVersion())
 	}
 	if ViperGetBool("debug") {
-		log.SetFlags(log.Flags() | log.Lshortfile)
+		log.SetFlags(log.Flags() | log.Llongfile)
 	}
 }
 

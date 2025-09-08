@@ -8,16 +8,16 @@ import (
 	"strings"
 )
 
-func Expand(pathname string) string {
-	if len(pathname) > 1 && pathname[0] == '~' {
+func Expand(value string) string {
+	value = os.ExpandEnv(value)
+	if len(value) > 1 && value[0] == '~' {
 		home, err := os.UserHomeDir()
 		if err != nil {
 			log.Fatalf("failed getting user home dir: %v", err)
 		}
-		pathname = filepath.Join(home, pathname[1:])
+		value = filepath.Join(home, value[1:])
 	}
-	pathname = os.ExpandEnv(pathname)
-	return pathname
+	return value
 }
 
 func ViperKey(key string) string {
@@ -33,7 +33,7 @@ func ViperKey(key string) string {
 func ViperGet(key string) any {
 	viperKey := ViperKey(key)
 	value := viper.Get(viperKey)
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGet(%s) -> %s=%v\n", key, viperKey, value)
 	}
 	return value
@@ -42,7 +42,7 @@ func ViperGet(key string) any {
 func ViperGetBool(key string) bool {
 	viperKey := ViperKey(key)
 	value := viper.GetBool(viperKey)
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetBool(%s) -> %s=%v\n", key, viperKey, value)
 	}
 	return value
@@ -51,7 +51,7 @@ func ViperGetBool(key string) bool {
 func ViperGetString(key string) string {
 	viperKey := ViperKey(key)
 	value := Expand(viper.GetString(viperKey))
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetString(%s) -> %s=%v\n", key, viperKey, value)
 	}
 	return value
@@ -63,7 +63,7 @@ func ViperGetStringSlice(key string) []string {
 	for _, value := range viper.GetStringSlice(viperKey) {
 		values = append(values, Expand(value))
 	}
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetStringSlice(%s) -> %s=%v\n", key, viperKey, values)
 	}
 	return values
@@ -75,7 +75,7 @@ func ViperGetStringMapString(key string) map[string]string {
 	for key, value := range viper.GetStringMapString(viperKey) {
 		values[key] = Expand(value)
 	}
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetStringMapString(%s) -> %s=%v\n", key, viperKey, values)
 	}
 	return values
@@ -84,7 +84,7 @@ func ViperGetStringMapString(key string) map[string]string {
 func ViperGetInt(key string) int {
 	viperKey := ViperKey(key)
 	value := viper.GetInt(viperKey)
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetInt(%s) -> %s=%d\n", key, viperKey, value)
 	}
 	return value
@@ -93,7 +93,7 @@ func ViperGetInt(key string) int {
 func ViperGetInt64(key string) int64 {
 	viperKey := ViperKey(key)
 	value := viper.GetInt64(viperKey)
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetInt64(%s) -> %s=%d\n", key, viperKey, value)
 	}
 	return value
@@ -102,7 +102,7 @@ func ViperGetInt64(key string) int64 {
 func ViperSet(key string, value any) {
 	viperKey := ViperKey(key)
 	viper.Set(viperKey, value)
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperSet(%s) %s=%v\n", key, viperKey, value)
 	}
 }
@@ -110,7 +110,7 @@ func ViperSet(key string, value any) {
 func ViperSetDefault(key string, value any) {
 	viperKey := ViperKey(key)
 	viper.SetDefault(viperKey, value)
-	if viper.GetBool(ViperKey("debug")) {
+	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperSetDefault(%s) %s=%v\n", key, viperKey, value)
 	}
 }
