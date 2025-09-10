@@ -87,6 +87,29 @@ func OptionString(cobraCmd CobraCommand, name, flag, defaultValue, description s
 	}
 }
 
+func OptionStringSlice(cobraCmd CobraCommand, name, flag string, defaultValue []string, description string) {
+
+	checkRootCmd("OptionStringSlice")
+	cmd := toCobraCmd("OptionStringSlice", "cobraCmd", cobraCmd)
+
+	if cmd == rootCmd {
+		if flag == "" {
+			rootCmd.PersistentFlags().StringSlice(name, defaultValue, description)
+		} else {
+			rootCmd.PersistentFlags().StringSliceP(name, flag, defaultValue, description)
+		}
+
+		viper.BindPFlag(OptionKey(cmd, name), rootCmd.PersistentFlags().Lookup(name))
+	} else {
+		if flag == "" {
+			cmd.PersistentFlags().StringSlice(name, defaultValue, description)
+		} else {
+			cmd.PersistentFlags().StringSliceP(name, flag, defaultValue, description)
+		}
+		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
+	}
+}
+
 func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, description string) {
 
 	checkRootCmd("OptionInt")
