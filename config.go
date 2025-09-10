@@ -157,17 +157,16 @@ func ConfigEdit() {
 	if configFilename == "" {
 		configFilename = ConfigInit(false)
 	}
-	var editCommand string
-	if runtime.GOOS == "windows" {
-		editCommand = "notepad"
-	} else {
-		editCommand = os.Getenv("VISUAL")
-		if editCommand == "" {
-			editCommand = os.Getenv("EDITOR")
-			if editCommand == "" {
-				editCommand = "vi"
-			}
-		}
+	editCommand := "vi"
+	envVisual := os.Getenv("VISUAL")
+	envEditor := os.Getenv("EDITOR")
+	switch {
+	case envVisual != "":
+		editCommand = envVisual
+	case envEditor != "":
+		editCommand = envEditor
+	case runtime.GOOS == "windows":
+		editCommand = "notepad.exe"
 	}
 	editor := exec.Command(editCommand, configFilename)
 	editor.Stdin = os.Stdin
