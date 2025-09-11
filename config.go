@@ -208,16 +208,24 @@ func initConfig() {
 
 	localConfig := fmt.Sprintf(".%s.yaml", name)
 	if IsFile(localConfig) {
-		ifp, err := os.Open(localConfig)
-		cobra.CheckErr(err)
-		defer ifp.Close()
-		err = viper.MergeConfig(ifp)
-		cobra.CheckErr(err)
-		if ViperGetBool("verbose") {
-			log.Println("Appended config from: ", localConfig)
-		}
+		AppendConfig(localConfig)
 	}
+}
 
+func AppendConfig(filename string) error {
+	ifp, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer ifp.Close()
+	err = viper.MergeConfig(ifp)
+	if err != nil {
+		return err
+	}
+	if ViperGetBool("verbose") {
+		log.Println("Appended config from: ", filename)
+	}
+	return nil
 }
 
 var configCmd = &cobra.Command{

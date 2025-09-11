@@ -97,6 +97,10 @@ func ConfigEdit() {
 	common.ConfigEdit()
 }
 
+func AppendConfig(filename string) error {
+	return common.AppendConfig(filename)
+}
+
 func Confirm(prompt string) bool {
 	return common.Confirm(prompt)
 }
