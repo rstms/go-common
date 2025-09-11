@@ -99,7 +99,7 @@ func openLog() {
 
 func closeLog() {
 	if LogFile != nil {
-		log.Println("shutdown")
+		log.Printf("%s %s shutdown\n", ProgramName(), ProgramVersion())
 		err := LogFile.Close()
 		if err != nil {
 			log.Fatalf("failed closing log file: %v", err)
