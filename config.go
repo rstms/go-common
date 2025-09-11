@@ -200,10 +200,24 @@ func initConfig() {
 			cobra.CheckErr(err)
 		}
 	}
+
 	openLog()
 	if viper.ConfigFileUsed() != "" && ViperGetBool("verbose") {
-		log.Println("Using config file:", viper.ConfigFileUsed())
+		log.Printf("Configured from: %s", viper.ConfigFileUsed())
 	}
+
+	localConfig := fmt.Sprintf(".%s.yaml", name)
+	if IsFile(localConfig) {
+		ifp, err := os.Open(localConfig)
+		cobra.CheckErr(err)
+		defer ifp.Close()
+		err = viper.MergeConfig(ifp)
+		cobra.CheckErr(err)
+		if ViperGetBool("verbose") {
+			log.Println("Appended config from: ", localConfig)
+		}
+	}
+
 }
 
 var configCmd = &cobra.Command{
