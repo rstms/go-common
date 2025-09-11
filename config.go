@@ -213,6 +213,9 @@ func initConfig() {
 }
 
 func AppendConfig(filename string) error {
+	if filename == "" {
+		return nil
+	}
 	ifp, err := os.Open(filename)
 	if err != nil {
 		return err
