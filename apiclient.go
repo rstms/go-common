@@ -176,26 +176,25 @@ func (c *client) request(method, path string, requestData, responseData interfac
 		}
 	}
 
-	var text string
-	if len(body) > 0 {
-		err = json.Unmarshal(body, responseData)
-		if err != nil {
-			return "", Fatalf("failed decoding JSON response: %v", err)
-		}
-		t, err := json.MarshalIndent(responseData, "", "  ")
-		if err != nil {
-			return "", Fatal(err)
-		}
-		text = string(t)
-	}
-
-	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		var detail string
+	if response.StatusCode >= 200 && response.StatusCode < 300 {
+		text := response.Status
 		if len(body) > 0 {
-			detail = "\n" + string(body)
+			err = json.Unmarshal(body, responseData)
+			if err != nil {
+				return "", Fatalf("failed decoding JSON response: %v", err)
+			}
+			t, err := json.MarshalIndent(responseData, "", "  ")
+			if err != nil {
+				return "", Fatal(err)
+			}
+			text = string(t)
 		}
-		return "", Fatalf("%s%s", response.Status, detail)
+		return text, nil
 	}
 
-	return text, nil
+	var detail string
+	if len(body) > 0 {
+		detail = "\n" + string(body)
+	}
+	return "", Fatalf("%s%s", response.Status, detail)
 }
