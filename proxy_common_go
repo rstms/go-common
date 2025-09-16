@@ -121,6 +121,10 @@ func HexDump(data []byte) string {
 	return common.HexDump(data)
 }
 
+func GetHostnameDetail() (string, string, string, error) {
+	return common.GetHostnameDetail()
+}
+
 func HostShortname() (string, error) {
 	return common.HostShortname()
 }
