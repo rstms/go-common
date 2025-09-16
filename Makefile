@@ -4,6 +4,10 @@ program != basename $$(pwd)
 
 latest_release != gh 2>/dev/null release list --json tagName --jq '.[0].tagName' | tr -d v
 version != cat VERSION
+os = $(if $(SYSTEMROOT),windows,$(shell uname | tr A-Z a-z))
+ifeq ($(os),windows)
+  script=sh
+endif
 
 rstms_modules = $(shell awk <go.mod '/^module/{next} /rstms/{print $$1}')
 
@@ -54,4 +58,4 @@ sterile: clean
 	rm -f go.mod go.sum
 
 proxy_common_go: *.go generate_proxy_source
-	sh ./generate_proxy_source >$@
+	$(script) ./generate_proxy_source >$@

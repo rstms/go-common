@@ -53,7 +53,16 @@ func getHostnameDetail() (string, string, string, error) {
 			if err != nil {
 				return "", "", "", Fatal(err)
 			}
+		case "linux":
+			data, err := exec.Command("hostname", "--fqdn").Output()
+			if err != nil {
+				return "", "", "", Fatal(err)
+			}
+			fqdn = strings.TrimSpace(string(data))
+		default:
+			return "", "", "", Fatalf("unsupported OS '%s'", runtime.GOOS)
 		}
+
 	}
 	parts := strings.Split(fqdn, ".")
 	if len(parts) < 2 {
