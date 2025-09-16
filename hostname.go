@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func getHostnameDetail() (string, string, string, error) {
+func GetHostnameDetail() (string, string, string, error) {
 	var host string
 	var domain string
 	fqdn, err := os.Hostname()
@@ -74,16 +74,16 @@ func getHostnameDetail() (string, string, string, error) {
 }
 
 func HostShortname() (string, error) {
-	host, _, _, err := getHostnameDetail()
+	host, _, _, err := GetHostnameDetail()
 	return host, err
 }
 
 func HostDomain() (string, error) {
-	_, domain, _, err := getHostnameDetail()
+	_, domain, _, err := GetHostnameDetail()
 	return domain, err
 }
 
 func HostFQDN() (string, error) {
-	_, _, fqdn, err := getHostnameDetail()
+	_, _, fqdn, err := GetHostnameDetail()
 	return fqdn, err
 }
