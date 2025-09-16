@@ -54,4 +54,4 @@ sterile: clean
 	rm -f go.mod go.sum
 
 proxy_common_go: *.go generate_proxy_source
-	./generate_proxy_source >$@
+	sh ./generate_proxy_source >$@

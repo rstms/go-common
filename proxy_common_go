@@ -121,6 +121,18 @@ func HexDump(data []byte) string {
 	return common.HexDump(data)
 }
 
+func HostShortname() (string, error) {
+	return common.HostShortname()
+}
+
+func HostDomain() (string, error) {
+	return common.HostDomain()
+}
+
+func HostFQDN() (string, error) {
+	return common.HostFQDN()
+}
+
 func IsDir(path string) bool {
 	return common.IsDir(path)
 }

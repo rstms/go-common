@@ -28,7 +28,7 @@ gen() {
     pre=$(awk <<<$1 -F'[ (]' '{print $2}')
     args=$(awk <<<$1 -F'[()]' '{print $2}')
     post=$(awk <<<$1 -F')' '{print $2}')
-    ret=$(awk <<<$post -F'{' '{print $1}')
+    ret=$(awk <<<$post -F'[{]' '{print $1}')
     #printf 'pre=%s\n' "$pre"
     #printf 'args=%s\n' "$args"
     #printf 'post=%s ret=%s\n' "$post" "$ret"
