@@ -177,8 +177,8 @@ func CobraInit(cobraRootCmd CobraCommand) {
 	cobra.OnInitialize(initConfig)
 	cobra.OnFinalize(shutdown)
 
-	rootCmd.PersistentFlags().StringVar(&configFilename, "config-file", "", "config file")
-	OptionString(rootCmd, "logfile", "", "stderr", "log filename")
+	rootCmd.PersistentFlags().StringVar(&configFilename, "configfile", "C", "config file")
+	OptionString(rootCmd, "logfile", "L", "stderr", "log filename")
 	OptionSwitch(rootCmd, "verbose", "v", "enable status output")
 	OptionSwitch(rootCmd, "debug", "d", "enable diagnostic output")
 	OptionString(rootCmd, "cache-dir", "", defaultCacheDir, "cache directory")
