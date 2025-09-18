@@ -60,7 +60,7 @@ func OptionSwitch(cobraCmd CobraCommand, name, flag, description string) {
 		} else {
 			cmd.PersistentFlags().BoolP(name, flag, false, description)
 		}
-		viper.BindPFlag(OptionKey(cmd, name), cmd.Flags().Lookup(name))
+		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
 	}
 }
 
