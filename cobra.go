@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -15,6 +16,7 @@ type CobraCommand interface {
 var rootCmd *cobra.Command
 var viperPrefix string
 var logFile *os.File
+var optionKeys []string
 
 // fail with informative error instead of panic if CobraInit has not been called
 func checkRootCmd(name string) {
@@ -39,7 +41,14 @@ func OptionKey(cobraCmd CobraCommand, key string) string {
 	if cmd != rootCmd {
 		prefix += cmd.Name() + "."
 	}
-	return strings.ToLower(strings.ReplaceAll(prefix+key, "-", "_"))
+	optionKey := strings.ToLower(strings.ReplaceAll(prefix+key, "-", "_"))
+	if optionKeys == nil {
+		optionKeys = []string{}
+	}
+	if !slices.Contains(optionKeys, optionKey) {
+		optionKeys = append(optionKeys, optionKey)
+	}
+	return optionKey
 }
 
 func OptionSwitch(cobraCmd CobraCommand, name, flag, description string) {
