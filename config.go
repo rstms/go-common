@@ -95,17 +95,29 @@ func configYAML() string {
 
 	// get the viper config as a map[string]any
 	viperConfig := viper.AllSettings()
-
-	// remove the config command flag(s) from the output
-	name := strings.ToLower(strings.ReplaceAll(ProgramName(), "-", "_"))
-	configMap, ok := viperConfig[name].(map[string]any)
-	if !ok {
-		cobra.CheckErr(Fatalf("failed reading configMap"))
-	}
-	delete(configMap, "config")
+	// remove the command flag keys from the output
 	fmt.Printf("optionKeys: %s\n", FormatJSON(optionKeys))
-	fmt.Printf("configMap: %s\n", FormatJSON(configMap))
+	fmt.Printf("BEFORE configMap: %s\n", FormatJSON(viperConfig))
+	for _, key := range optionKeys {
+		pruneConfig(key, viperConfig)
+	}
+	fmt.Printf("AFTER configMap: %s\n", FormatJSON(viperConfig))
 	return FormatYAML(&viperConfig)
+}
+
+func pruneConfig(key string, config map[string]any) {
+	fields := strings.Split(key, ".")
+	parent := config
+	var parentKey string
+	for i := 0; i < len(fields)-1; i-- {
+		parentKey = fields[i]
+		parent = config
+		config = config[parentKey].(map[string]any)
+	}
+	delete(config, fields[len(fields)-1])
+	if len(config) == 0 {
+		delete(parent, parentKey)
+	}
 }
 
 func FormatYAML(value any) string {
