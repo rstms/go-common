@@ -33,18 +33,18 @@ package common
 import (
 	"bytes"
 	"fmt"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	yaml "gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"time"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	yaml "gopkg.in/yaml.v3"
 )
 
 func ConfigString(header bool) string {
@@ -98,27 +98,29 @@ func configYAML() string {
 	// remove the command flag keys from the output
 	fmt.Printf("optionKeys: %s\n", FormatJSON(optionKeys))
 	fmt.Printf("BEFORE configMap: %s\n", FormatJSON(viperConfig))
-	for _, key := range optionKeys {
-		pruneConfig(key, viperConfig)
-	}
+	pruneConfig("", viperConfig)
 	fmt.Printf("AFTER configMap: %s\n", FormatJSON(viperConfig))
 	return FormatYAML(&viperConfig)
 }
 
-func pruneConfig(key string, config map[string]any) {
-	fields := strings.Split(key, ".")
-	parent := config
-	var parentKey string
-	if len(fields) > 1 {
-		for i := 0; i < len(fields)-1; i-- {
-			parentKey = fields[i]
-			parent = config
-			config = config[parentKey].(map[string]any)
+func isZeroValue(v interface{}) bool {
+	return reflect.DeepEqual(v, reflect.Zero(reflect.TypeOf(v)).Interface())
+}
+
+func pruneConfig(parentKey string, config map[string]any) {
+	deleteKeys := []string{}
+	for key, value := range config {
+		switch value.(type) {
+		case map[string]any:
+			pruneConfig(parentKey+"."+key, value.(map[string]any))
+		default:
+			if isZeroValue(value) {
+				deleteKeys = append(deleteKeys, key)
+			}
 		}
-		delete(config, fields[len(fields)-1])
-		if len(config) == 0 {
-			delete(parent, parentKey)
-		}
+	}
+	for _, key := range deleteKeys {
+		delete(config, key)
 	}
 }
 
