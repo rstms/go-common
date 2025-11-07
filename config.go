@@ -107,12 +107,18 @@ func isZeroValue(v interface{}) bool {
 	return reflect.DeepEqual(v, reflect.Zero(reflect.TypeOf(v)).Interface())
 }
 
-func pruneConfig(parentKey string, config map[string]any) {
+func pruneConfig(parentKey string, config map[string]any) bool {
 	deleteKeys := []string{}
 	for key, value := range config {
 		switch value.(type) {
 		case map[string]any:
-			pruneConfig(parentKey+"."+key, value.(map[string]any))
+			if pruneConfig(parentKey+"."+key, value.(map[string]any)) {
+				deleteKeys = append(deleteKeys, key)
+			}
+		case []string:
+			if len(value.([]string)) == 0 {
+				deleteKeys = append(deleteKeys, key)
+			}
 		default:
 			if isZeroValue(value) {
 				deleteKeys = append(deleteKeys, key)
@@ -122,6 +128,7 @@ func pruneConfig(parentKey string, config map[string]any) {
 	for _, key := range deleteKeys {
 		delete(config, key)
 	}
+	return len(config) == 0
 }
 
 func FormatYAML(value any) string {
