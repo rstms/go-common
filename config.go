@@ -109,14 +109,16 @@ func pruneConfig(key string, config map[string]any) {
 	fields := strings.Split(key, ".")
 	parent := config
 	var parentKey string
-	for i := 0; i < len(fields)-1; i-- {
-		parentKey = fields[i]
-		parent = config
-		config = config[parentKey].(map[string]any)
-	}
-	delete(config, fields[len(fields)-1])
-	if len(config) == 0 {
-		delete(parent, parentKey)
+	if len(fields) > 1 {
+		for i := 0; i < len(fields)-1; i-- {
+			parentKey = fields[i]
+			parent = config
+			config = config[parentKey].(map[string]any)
+		}
+		delete(config, fields[len(fields)-1])
+		if len(config) == 0 {
+			delete(parent, parentKey)
+		}
 	}
 }
 
