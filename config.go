@@ -95,11 +95,8 @@ func configYAML() string {
 
 	// get the viper config as a map[string]any
 	viperConfig := viper.AllSettings()
-	// remove the command flag keys from the output
-	fmt.Printf("optionKeys: %s\n", FormatJSON(optionKeys))
-	fmt.Printf("BEFORE configMap: %s\n", FormatJSON(viperConfig))
+	// remove zero-value command flag keys from the output
 	pruneConfig("", viperConfig)
-	fmt.Printf("AFTER configMap: %s\n", FormatJSON(viperConfig))
 	return FormatYAML(&viperConfig)
 }
 
