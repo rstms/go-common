@@ -103,6 +103,8 @@ func configYAML() string {
 		cobra.CheckErr(Fatalf("failed reading configMap"))
 	}
 	delete(configMap, "config")
+	fmt.Printf("optionKeys: %s\n", FormatJSON(optionKeys))
+	fmt.Printf("configMap: %s\n", FormatJSON(configMap))
 	return FormatYAML(&viperConfig)
 }
 
