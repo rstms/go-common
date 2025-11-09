@@ -196,11 +196,3 @@ func ViperSet(key string, value any) {
 func ViperSetDefault(key string, value any) {
 	rstms.ViperSetDefault(key, value)
 }
-
-func HideConsoleWindow() error {
-	return rstms.HideConsoleWindow()
-}
-
-func SetConsoleWindowVisibility(visibility string) error {
-	return rstms.SetConsoleWindowVisibility(visibility)
-}
