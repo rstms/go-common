@@ -1,6 +1,6 @@
 module github.com/rstms/go-common
 
-go 1.24.10
+go 1.25.4
 
 require (
 	github.com/google/uuid v1.6.0
