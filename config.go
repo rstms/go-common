@@ -200,7 +200,7 @@ func ConfigEdit() {
 
 func initConfig() {
 	name := strings.ToLower(ProgramName())
-	viper.SetEnvPrefix("rstms")
+	viper.SetEnvPrefix(name)
 	viper.AutomaticEnv()
 	if configFilename != "" {
 		viper.SetConfigFile(configFilename)
