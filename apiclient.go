@@ -31,7 +31,6 @@ type client struct {
 	Headers        map[string]string
 	verbose        bool
 	debug          bool
-	RequireSuccess bool
 	Flags          map[string]bool
 	flagNames      []string
 	lastStatusCode int
@@ -40,16 +39,16 @@ type client struct {
 func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (APIClient, error) {
 
 	api := client{
-		URL:            url,
-		Headers:        make(map[string]string),
-		verbose:        ViperGetBool(prefix + "verbose"),
-		debug:          ViperGetBool(prefix + "debug"),
-		RequireSuccess: true,
-		Flags:          make(map[string]bool),
+		URL:     url,
+		Headers: make(map[string]string),
+		verbose: ViperGetBool(prefix + "verbose"),
+		debug:   ViperGetBool(prefix + "debug"),
+		Flags:   make(map[string]bool),
 	}
 
 	// set all supported flags to initial values
 	api.Flags["require_success"] = true
+	api.Flags["require_json"] = true
 
 	if headers != nil {
 		for k, v := range *headers {
@@ -213,15 +212,23 @@ func (c *client) request(method, path string, requestData, responseData interfac
 
 	text := response.Status
 	if len(body) > 0 {
-		err = json.Unmarshal(body, responseData)
-		if err != nil {
-			return "", Fatalf("failed decoding JSON response: %v", err)
+		if responseData == nil {
+			text = string(body)
+		} else {
+			err = json.Unmarshal(body, responseData)
+			if err != nil {
+				if c.Flags["require_json"] {
+					return "", Fatalf("failed decoding JSON response: %v", err)
+				}
+				text = string(body)
+			} else {
+				t, err := json.MarshalIndent(responseData, "", "  ")
+				if err != nil {
+					return "", Fatal(err)
+				}
+				text = string(t)
+			}
 		}
-		t, err := json.MarshalIndent(responseData, "", "  ")
-		if err != nil {
-			return "", Fatal(err)
-		}
-		text = string(t)
 	}
 	return text, nil
 }
