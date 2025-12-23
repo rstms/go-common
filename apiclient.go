@@ -22,7 +22,7 @@ type APIClient interface {
 	Put(path string, request, response interface{}, headers *map[string]string) (string, error)
 	Delete(path string, response interface{}) (string, error)
 	SetFlag(string, bool) error
-	StatusCode() int
+	StatusCode() (int, bool)
 }
 
 type client struct {
@@ -118,8 +118,8 @@ func (c *client) SetFlag(name string, value bool) error {
 	return Fatalf("unknown flag: %s", name)
 }
 
-func (c *client) StatusCode() int {
-	return c.lastStatusCode
+func (c *client) StatusCode() (int, bool) {
+	return c.lastStatusCode, (c.lastStatusCode >= 200 && c.lastStatusCode < 300)
 }
 
 func (c *client) Get(path string, response interface{}) (string, error) {
