@@ -44,8 +44,10 @@ func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[st
 		debug:          ViperGetBool(prefix + "debug"),
 		RequireSuccess: true,
 		Flags:          make(map[string]bool),
-		flagNames:      []string{"require_success"},
 	}
+
+	// set all supported flags to initial values
+	api.Flags["require_success"] = true
 
 	if headers != nil {
 		for k, v := range *headers {
@@ -105,7 +107,7 @@ func (c *client) Close() {
 }
 
 func (c *client) SetFlag(name string, value bool) error {
-	for _, flagName := range c.flagNames {
+	for flagName, _ := range c.Flags {
 		if name == flagName {
 			c.Flags[name] = value
 			return nil
