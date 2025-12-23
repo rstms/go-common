@@ -21,6 +21,7 @@ type APIClient interface {
 	Post(path string, request, response interface{}, headers *map[string]string) (string, error)
 	Put(path string, request, response interface{}, headers *map[string]string) (string, error)
 	Delete(path string, response interface{}) (string, error)
+	SetFlag(string, bool) error
 }
 
 type client struct {
@@ -30,6 +31,8 @@ type client struct {
 	verbose        bool
 	debug          bool
 	RequireSuccess bool
+	Flags          map[string]bool
+	flagNames      []string
 }
 
 func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (APIClient, error) {
@@ -40,6 +43,8 @@ func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[st
 		verbose:        ViperGetBool(prefix + "verbose"),
 		debug:          ViperGetBool(prefix + "debug"),
 		RequireSuccess: true,
+		Flags:          make(map[string]bool),
+		flagNames:      []string{"require_success"},
 	}
 
 	if headers != nil {
@@ -97,6 +102,16 @@ func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[st
 func (c *client) Close() {
 	c.c.CloseIdleConnections()
 	c.c = nil
+}
+
+func (c *client) SetFlag(name string, value bool) error {
+	for _, flagName := range c.flagNames {
+		if name == flagName {
+			c.Flags[name] = value
+			return nil
+		}
+	}
+	return Fatalf("unknown flag: %s", name)
 }
 
 func (c *client) Get(path string, response interface{}) (string, error) {
@@ -179,8 +194,7 @@ func (c *client) request(method, path string, requestData, responseData interfac
 	}
 
 	switch {
-	case response.StatusCode >= 200 && response.StatusCode < 300:
-	case !c.RequireSuccess:
+	case c.Flags["require_success"] && response.StatusCode >= 200 && response.StatusCode < 300:
 	default:
 		var detail string
 		if len(body) > 0 {
