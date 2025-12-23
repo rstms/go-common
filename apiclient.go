@@ -24,20 +24,22 @@ type APIClient interface {
 }
 
 type client struct {
-	c       *http.Client
-	URL     string
-	Headers map[string]string
-	verbose bool
-	debug   bool
+	c              *http.Client
+	URL            string
+	Headers        map[string]string
+	verbose        bool
+	debug          bool
+	RequireSuccess bool
 }
 
 func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (APIClient, error) {
 
 	api := client{
-		URL:     url,
-		Headers: make(map[string]string),
-		verbose: ViperGetBool(prefix + "verbose"),
-		debug:   ViperGetBool(prefix + "debug"),
+		URL:            url,
+		Headers:        make(map[string]string),
+		verbose:        ViperGetBool(prefix + "verbose"),
+		debug:          ViperGetBool(prefix + "debug"),
+		RequireSuccess: true,
 	}
 
 	if headers != nil {
@@ -176,25 +178,28 @@ func (c *client) request(method, path string, requestData, responseData interfac
 		}
 	}
 
-	if response.StatusCode >= 200 && response.StatusCode < 300 {
-		text := response.Status
+	switch {
+	case response.StatusCode >= 200 && response.StatusCode < 300:
+	case !c.RequireSuccess:
+	default:
+		var detail string
 		if len(body) > 0 {
-			err = json.Unmarshal(body, responseData)
-			if err != nil {
-				return "", Fatalf("failed decoding JSON response: %v", err)
-			}
-			t, err := json.MarshalIndent(responseData, "", "  ")
-			if err != nil {
-				return "", Fatal(err)
-			}
-			text = string(t)
+			detail = "\n" + string(body)
 		}
-		return text, nil
+		return "", Fatalf("%s%s", response.Status, detail)
 	}
 
-	var detail string
+	text := response.Status
 	if len(body) > 0 {
-		detail = "\n" + string(body)
+		err = json.Unmarshal(body, responseData)
+		if err != nil {
+			return "", Fatalf("failed decoding JSON response: %v", err)
+		}
+		t, err := json.MarshalIndent(responseData, "", "  ")
+		if err != nil {
+			return "", Fatal(err)
+		}
+		text = string(t)
 	}
-	return "", Fatalf("%s%s", response.Status, detail)
+	return text, nil
 }
