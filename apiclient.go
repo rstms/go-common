@@ -22,6 +22,7 @@ type APIClient interface {
 	Put(path string, request, response interface{}, headers *map[string]string) (string, error)
 	Delete(path string, response interface{}) (string, error)
 	SetFlag(string, bool) error
+	StatusCode() int
 }
 
 type client struct {
@@ -33,6 +34,7 @@ type client struct {
 	RequireSuccess bool
 	Flags          map[string]bool
 	flagNames      []string
+	lastStatusCode int
 }
 
 func NewAPIClient(prefix, url, certFile, keyFile, caFile string, headers *map[string]string) (APIClient, error) {
@@ -116,6 +118,10 @@ func (c *client) SetFlag(name string, value bool) error {
 	return Fatalf("unknown flag: %s", name)
 }
 
+func (c *client) StatusCode() int {
+	return c.lastStatusCode
+}
+
 func (c *client) Get(path string, response interface{}) (string, error) {
 	return c.request("GET", path, nil, response, nil)
 }
@@ -195,9 +201,9 @@ func (c *client) request(method, path string, requestData, responseData interfac
 		}
 	}
 
-	switch {
-	case c.Flags["require_success"] && response.StatusCode >= 200 && response.StatusCode < 300:
-	default:
+	c.lastStatusCode = response.StatusCode
+
+	if c.Flags["require_success"] && response.StatusCode < 200 && response.StatusCode >= 300 {
 		var detail string
 		if len(body) > 0 {
 			detail = "\n" + string(body)
