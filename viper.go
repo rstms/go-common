@@ -81,6 +81,18 @@ func ViperGetStringMapString(key string) map[string]string {
 	return values
 }
 
+func ViperGetStringMap(key string) map[string]any {
+	viperKey := ViperKey(key)
+	values := make(map[string]any)
+	for key, value := range viper.GetStringMap(viperKey) {
+		values[key] = value
+	}
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetStringMap(%s) -> %s=%v\n", key, viperKey, values)
+	}
+	return values
+}
+
 func ViperGetInt(key string) int {
 	viperKey := ViperKey(key)
 	value := viper.GetInt(viperKey)
