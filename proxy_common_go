@@ -183,6 +183,10 @@ func ViperGetStringMapString(key string) map[string]string {
 	return rstms.ViperGetStringMapString(key)
 }
 
+func ViperGetStringMap(key string) map[string]any {
+	return rstms.ViperGetStringMap(key)
+}
+
 func ViperGetInt(key string) int {
 	return rstms.ViperGetInt(key)
 }
