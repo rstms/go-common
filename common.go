@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const Version = "0.2.69"
+const Version = "0.2.70"
 
 var LogFile *os.File
 
