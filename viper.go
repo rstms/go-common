@@ -111,6 +111,15 @@ func ViperGetInt64(key string) int64 {
 	return value
 }
 
+func ViperGetFloat64(key string) float64 {
+	viperKey := ViperKey(key)
+	value := viper.GetFloat64(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetFloat64(%s) -> %s=%f\n", key, viperKey, value)
+	}
+	return value
+}
+
 func ViperSet(key string, value any) {
 	viperKey := ViperKey(key)
 	viper.Set(viperKey, value)

@@ -195,6 +195,10 @@ func ViperGetInt64(key string) int64 {
 	return rstms.ViperGetInt64(key)
 }
 
+func ViperGetFloat64(key string) float64 {
+	return rstms.ViperGetFloat64(key)
+}
+
 func ViperSet(key string, value any) {
 	rstms.ViperSet(key, value)
 }
