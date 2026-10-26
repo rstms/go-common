@@ -195,8 +195,24 @@ func ViperGetInt(key string) int {
 	return rstms.ViperGetInt(key)
 }
 
+func ViperGetUint(key string) uint {
+	return rstms.ViperGetUint(key)
+}
+
+func ViperGetInt32(key string) int32 {
+	return rstms.ViperGetInt32(key)
+}
+
+func ViperGetUint32(key string) uint32 {
+	return rstms.ViperGetUint32(key)
+}
+
 func ViperGetInt64(key string) int64 {
 	return rstms.ViperGetInt64(key)
+}
+
+func ViperGetUint64(key string) uint64 {
+	return rstms.ViperGetUint64(key)
 }
 
 func ViperGetFloat64(key string) float64 {

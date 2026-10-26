@@ -102,11 +102,47 @@ func ViperGetInt(key string) int {
 	return value
 }
 
+func ViperGetUint(key string) uint {
+	viperKey := ViperKey(key)
+	value := viper.GetUint(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetUint(%s) -> %s=%d\n", key, viperKey, value)
+	}
+	return value
+}
+
+func ViperGetInt32(key string) int32 {
+	viperKey := ViperKey(key)
+	value := viper.GetInt32(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetInt32(%s) -> %s=%d\n", key, viperKey, value)
+	}
+	return value
+}
+
+func ViperGetUint32(key string) uint32 {
+	viperKey := ViperKey(key)
+	value := viper.GetUint32(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetUint32(%s) -> %s=%d\n", key, viperKey, value)
+	}
+	return value
+}
+
 func ViperGetInt64(key string) int64 {
 	viperKey := ViperKey(key)
 	value := viper.GetInt64(viperKey)
 	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetInt64(%s) -> %s=%d\n", key, viperKey, value)
+	}
+	return value
+}
+
+func ViperGetUint64(key string) uint64 {
+	viperKey := ViperKey(key)
+	value := viper.GetUint64(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetUint64(%s) -> %s=%d\n", key, viperKey, value)
 	}
 	return value
 }
