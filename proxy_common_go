@@ -83,6 +83,10 @@ func FormatJSON(v any) string {
 	return rstms.FormatJSON(v)
 }
 
+func FormatCompactJSON(v any) string {
+	return rstms.FormatCompactJSON(v)
+}
+
 func ConfigString(header bool) string {
 	return rstms.ConfigString(header)
 }

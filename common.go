@@ -115,3 +115,11 @@ func FormatJSON(v any) string {
 	}
 	return string(data)
 }
+
+func FormatCompactJSON(v any) string {
+	data, err := json.Marshal(v)
+	if err != nil {
+		log.Fatalf("failed formatting JSON: %v", err)
+	}
+	return string(data)
+}
