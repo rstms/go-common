@@ -43,6 +43,10 @@ func OptionStringSlice(cobraCmd CobraCommand, name, flag string, defaultValue []
 	rstms.OptionStringSlice(cobraCmd, name, flag, defaultValue, description)
 }
 
+func OptionStringMapString(cobraCmd CobraCommand, name, flag string, defaultValue map[string]string, description string) {
+	rstms.OptionStringMapString(cobraCmd, name, flag, defaultValue, description)
+}
+
 func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, description string) {
 	rstms.OptionInt(cobraCmd, name, flag, defaultValue, description)
 }
