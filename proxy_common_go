@@ -51,8 +51,12 @@ func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, descr
 	rstms.OptionInt(cobraCmd, name, flag, defaultValue, description)
 }
 
-func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, formats *[]string, description string) {
-	rstms.OptionTime(cobraCmd, name, flag, defaultValue, formats, description)
+func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, description string) {
+	rstms.OptionTime(cobraCmd, name, flag, defaultValue, description)
+}
+
+func OptionDate(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, description string) {
+	rstms.OptionDate(cobraCmd, name, flag, defaultValue, description)
 }
 
 func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {

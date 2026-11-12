@@ -165,28 +165,51 @@ func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, descr
 	}
 }
 
-func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, formats *[]string, description string) {
+func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, description string) {
 
 	checkRootCmd("OptionTime")
 	cmd := toCobraCmd("OptionTime", "cobraCmd", cobraCmd)
 
-	if formats == nil {
-		formats = &[]string{time.RFC3339}
-	}
+	formats := []string{time.TimeOnly, time.RFC3339}
 
 	if cmd == rootCmd {
 		if flag == "" {
-			rootCmd.PersistentFlags().Time(name, defaultValue, *formats, description)
+			rootCmd.PersistentFlags().Time(name, defaultValue, formats, description)
 		} else {
-			rootCmd.PersistentFlags().TimeP(name, flag, defaultValue, *formats, description)
+			rootCmd.PersistentFlags().TimeP(name, flag, defaultValue, formats, description)
 		}
 
 		viper.BindPFlag(OptionKey(cmd, name), rootCmd.PersistentFlags().Lookup(name))
 	} else {
 		if flag == "" {
-			cmd.PersistentFlags().Time(name, defaultValue, *formats, description)
+			cmd.PersistentFlags().Time(name, defaultValue, formats, description)
 		} else {
-			cmd.PersistentFlags().TimeP(name, flag, defaultValue, *formats, description)
+			cmd.PersistentFlags().TimeP(name, flag, defaultValue, formats, description)
+		}
+		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
+	}
+}
+
+func OptionDate(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, description string) {
+
+	checkRootCmd("OptionDate")
+	cmd := toCobraCmd("OptionDate", "cobraCmd", cobraCmd)
+
+	formats := []string{time.DateOnly, time.RFC3339}
+
+	if cmd == rootCmd {
+		if flag == "" {
+			rootCmd.PersistentFlags().Time(name, defaultValue, formats, description)
+		} else {
+			rootCmd.PersistentFlags().TimeP(name, flag, defaultValue, formats, description)
+		}
+
+		viper.BindPFlag(OptionKey(cmd, name), rootCmd.PersistentFlags().Lookup(name))
+	} else {
+		if flag == "" {
+			cmd.PersistentFlags().Time(name, defaultValue, formats, description)
+		} else {
+			cmd.PersistentFlags().TimeP(name, flag, defaultValue, formats, description)
 		}
 		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
 	}
