@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func Expand(value string) string {
@@ -152,6 +153,24 @@ func ViperGetFloat64(key string) float64 {
 	value := viper.GetFloat64(viperKey)
 	if viper.GetBool(ViperKey("debug_viper")) {
 		log.Printf("ViperGetFloat64(%s) -> %s=%f\n", key, viperKey, value)
+	}
+	return value
+}
+
+func ViperGetTime(key string) time.Time {
+	viperKey := ViperKey(key)
+	value := viper.GetTime(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetTime(%s) -> %s=%v\n", key, viperKey, value)
+	}
+	return value
+}
+
+func ViperGetDate(key string) time.Time {
+	viperKey := ViperKey(key)
+	value := viper.GetTime(viperKey)
+	if viper.GetBool(ViperKey("debug_viper")) {
+		log.Printf("ViperGetDate(%s) -> %s=%v\n", key, viperKey, value)
 	}
 	return value
 }

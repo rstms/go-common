@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"time"
 )
 
 type CobraCommand interface {
@@ -159,6 +160,33 @@ func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, descr
 			cmd.PersistentFlags().Int(name, defaultValue, description)
 		} else {
 			cmd.PersistentFlags().IntP(name, flag, defaultValue, description)
+		}
+		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
+	}
+}
+
+func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, formats *[]string, description string) {
+
+	checkRootCmd("OptionTime")
+	cmd := toCobraCmd("OptionTime", "cobraCmd", cobraCmd)
+
+	if formats == nil {
+		formats = &[]string{time.RFC3339}
+	}
+
+	if cmd == rootCmd {
+		if flag == "" {
+			rootCmd.PersistentFlags().Time(name, defaultValue, *formats, description)
+		} else {
+			rootCmd.PersistentFlags().TimeP(name, flag, defaultValue, *formats, description)
+		}
+
+		viper.BindPFlag(OptionKey(cmd, name), rootCmd.PersistentFlags().Lookup(name))
+	} else {
+		if flag == "" {
+			cmd.PersistentFlags().Time(name, defaultValue, *formats, description)
+		} else {
+			cmd.PersistentFlags().TimeP(name, flag, defaultValue, *formats, description)
 		}
 		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
 	}

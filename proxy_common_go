@@ -51,6 +51,10 @@ func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, descr
 	rstms.OptionInt(cobraCmd, name, flag, defaultValue, description)
 }
 
+func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, formats *[]string, description string) {
+	rstms.OptionTime(cobraCmd, name, flag, defaultValue, formats, description)
+}
+
 func CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd CobraCommand) {
 	rstms.CobraAddCommand(cobraRootCmd, parentCmd, cobraCmd)
 }
@@ -221,6 +225,14 @@ func ViperGetUint64(key string) uint64 {
 
 func ViperGetFloat64(key string) float64 {
 	return rstms.ViperGetFloat64(key)
+}
+
+func ViperGetTime(key string) time.Time {
+	return rstms.ViperGetTime(key)
+}
+
+func ViperGetDate(key string) time.Time {
+	return rstms.ViperGetDate(key)
 }
 
 func ViperSet(key string, value any) {
