@@ -165,6 +165,29 @@ func OptionInt(cobraCmd CobraCommand, name, flag string, defaultValue int, descr
 	}
 }
 
+func OptionFloat64(cobraCmd CobraCommand, name, flag string, defaultValue float64, description string) {
+
+	checkRootCmd("OptionFloat64")
+	cmd := toCobraCmd("OptionFloat64", "cobraCmd", cobraCmd)
+
+	if cmd == rootCmd {
+		if flag == "" {
+			rootCmd.PersistentFlags().Float64(name, defaultValue, description)
+		} else {
+			rootCmd.PersistentFlags().Float64P(name, flag, defaultValue, description)
+		}
+
+		viper.BindPFlag(OptionKey(cmd, name), rootCmd.PersistentFlags().Lookup(name))
+	} else {
+		if flag == "" {
+			cmd.PersistentFlags().Float64(name, defaultValue, description)
+		} else {
+			cmd.PersistentFlags().Float64P(name, flag, defaultValue, description)
+		}
+		viper.BindPFlag(OptionKey(cmd, name), cmd.PersistentFlags().Lookup(name))
+	}
+}
+
 func OptionTime(cobraCmd CobraCommand, name, flag string, defaultValue time.Time, description string) {
 
 	checkRootCmd("OptionTime")
